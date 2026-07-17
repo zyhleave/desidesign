@@ -1,78 +1,135 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { CircleUserRound, Cloud, Download, Grid2X2, RefreshCw, Sparkles, Type, Upload } from "lucide-react";
 
 const backgrounds = ["Fireworks", "Diyas", "Rangoli"];
+const DEFAULT_PORTRAIT = "https://lh3.googleusercontent.com/aida/AP1WRLukS6C5H3MfhPMbQ116CUN6KKerEkRxMTXgNNPQQHWMOuHigg4t2xt6YuZDLpwXT9yjK7Y1PNdedhnHC0Esj2bU7bHiq1on1B2n95qBGopAcJIL0ANmmK8p0B4cZ7gijieHhKZdBj9g1RqOQvqM4eHQj9jHy7oX568RlwEZVz4FKaNdZXRFzYNPw1RVYaG0Ecbk0fzqdW07W-YRyZXs7YW04R7bnzqIXuKzm6dPPyFTbFSnKEPqwxyyUDA";
+
+type HistoryItem = { id: string; url: string; kind: "preview" | "ai"; createdAt?: string };
 
 export default function Home() {
   const [portraitType, setPortraitType] = useState("Solo");
   const [background, setBackground] = useState("Fireworks");
   const [style, setStyle] = useState("Modern Flat");
+  const [attire, setAttire] = useState("Traditional Ethnic");
   const [greeting, setGreeting] = useState("Happy Diwali");
   const [name, setName] = useState("YH & Family");
   const [photo, setPhoto] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const [previewCount, setPreviewCount] = useState(0);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+
+  const loadHistory = useCallback(async () => {
+    const response = await fetch("/api/history", { cache: "no-store" });
+    const data = await response.json();
+    setHistory(data.items || []);
+  }, []);
+
+  useEffect(() => {
+    const savedCount = Number.parseInt(localStorage.getItem("desidesign-preview-count") || "0", 10);
+    queueMicrotask(() => setPreviewCount(Math.min(Math.max(savedCount, 0), 3)));
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/history", { cache: "no-store" })
+      .then((response) => response.json())
+      .then((data) => { if (active) setHistory(data.items || []); })
+      .catch(() => { if (active) setHistory([]); });
+    return () => { active = false; };
+  }, []);
 
   function handlePhoto(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (file) setPhoto(URL.createObjectURL(file));
   }
 
+  async function generatePreview() {
+    if (previewCount >= 3) {
+      setNotice("Free previews used up (3/3). Use AI Enhance for the final 2K image.");
+      return;
+    }
+    setIsPreviewLoading(true);
+    setNotice("Testing your composition...");
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const response = await fetch("/api/preview", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ background, greeting, name }) });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Could not create preview.");
+      setGeneratedImage(data.url);
+      const nextCount = Math.min(previewCount + 1, 3);
+      setPreviewCount(nextCount);
+      localStorage.setItem("desidesign-preview-count", String(nextCount));
+      setNotice("Preview ready. Remaining free tries: " + (3 - nextCount) + "/3.");
+      await loadHistory();
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "Preview failed.");
+    } finally {
+      setIsPreviewLoading(false);
+    }
+  }
+
+  async function generatePortrait() {
+    setIsAiLoading(true);
+    setNotice("Starting 2K AI generation...");
+    const subject = portraitType === "Couple" ? "an Indian couple" : "one Indian person";
+    const prompt = `A premium square Diwali portrait illustration featuring ${subject}. ${attire}, ${background.toLowerCase()} celebration background, ${style.toLowerCase()} illustration style. Warm joyful expression, culturally respectful details, polished commercial social media artwork, centered composition. No text, no letters, no watermark, no logo.`;
+    try {
+      const createResponse = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prompt }) });
+      const createData = await createResponse.json();
+      if (!createResponse.ok) throw new Error(createData.error || "Could not start generation.");
+      const deadline = Date.now() + 120_000;
+      while (Date.now() < deadline) {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        const statusResponse = await fetch(`/api/generate/status?taskId=${encodeURIComponent(createData.taskId)}`);
+        const statusData = await statusResponse.json();
+        if (!statusResponse.ok) throw new Error(statusData.error || "Could not check generation status.");
+        if (statusData.status === "failed") throw new Error(statusData.error || "Generation failed.");
+        if (statusData.status === "completed") {
+          if (!statusData.results?.[0]) throw new Error("Generation completed without an image.");
+          setGeneratedImage(statusData.results[0]);
+          setNotice("2K AI portrait generated and saved.");
+          await loadHistory();
+          return;
+        }
+        setNotice(`Creating 2K portrait... ${statusData.progress || 0}%`);
+      }
+      throw new Error("Generation timed out. Please try again.");
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "Generation failed. Please try again.");
+    } finally {
+      setIsAiLoading(false);
+    }
+  }
+
   return (
     <main className="app-shell">
-      <header className="topbar">
-        <div className="topbar-inner">
-          <div className="brand">DesiDesign</div>
-          <div className="saved"><Cloud size={16} /> Saved locally</div>
-          <div className="top-actions"><button>Saved</button><button className="icon-button" aria-label="Account"><CircleUserRound size={22} /></button></div>
-        </div>
-      </header>
-
+      <header className="topbar"><div className="topbar-inner"><div className="brand">DesiDesign</div><div className="saved"><Cloud size={16} /> Saved locally</div><div className="top-actions"><button>Saved</button><button className="icon-button" aria-label="Account"><CircleUserRound size={22} /></button></div></div></header>
       <div className="workspace">
         <aside className="sidebar">
           <div className="studio-heading"><p>PORTRAIT STUDIO</p><span>Create your festive avatar</span></div>
-
-          <Control title="PORTRAIT TYPE" active>
-            <div className="segmented three">
-              {["Solo", "Couple"].map((item) => <button key={item} className={portraitType === item ? "selected" : ""} onClick={() => setPortraitType(item)}>{item}</button>)}
-              <button disabled><span>Family</span><small>SOON</small></button>
-            </div>
-          </Control>
-
-          <Control title="PHOTO UPLOAD">
-            <label className="upload-box">
-              <Upload size={29} />
-              <span>{photo ? "Photo ready - click to replace" : "Drop photo or click to browse"}</span>
-              <input type="file" accept="image/*" onChange={handlePhoto} />
-            </label>
-          </Control>
-
+          <Control title="PORTRAIT TYPE" active><div className="segmented three">{["Solo", "Couple"].map((item) => <button key={item} className={portraitType === item ? "selected" : ""} onClick={() => setPortraitType(item)}>{item}</button>)}<button disabled><span>Family</span><small>SOON</small></button></div></Control>
+          <Control title="PHOTO UPLOAD"><label className="upload-box"><Upload size={29} /><span>{photo ? "Photo ready - preview only" : "Drop photo or click to browse"}</span><input type="file" accept="image/*" onChange={handlePhoto} /></label></Control>
           <Control title="CHOOSE LOOK">
-            <div className="field"><label>ATTIRE</label><select defaultValue="Traditional Ethnic"><option>Traditional Ethnic</option><option>Elegant Festive</option><option>Keep Original</option></select></div>
+            <div className="field"><label>ATTIRE</label><select value={attire} onChange={(event) => setAttire(event.target.value)}><option>Traditional Ethnic</option><option>Elegant Festive</option><option>Keep Original</option></select></div>
             <div className="field"><label>BACKGROUND</label><div className="background-grid">{backgrounds.map((item) => <button key={item} className={background === item ? "selected" : ""} onClick={() => setBackground(item)}><span className={`swatch ${item.toLowerCase()}`} />{item}</button>)}</div></div>
             <div className="field"><label>STYLE</label><div className="segmented">{["Hand-drawn", "Modern Flat"].map((item) => <button key={item} className={style === item ? "selected" : ""} onClick={() => setStyle(item)}>{item}</button>)}</div></div>
           </Control>
-
           <Control title="PERSONALIZE">
             <div className="form-stack"><label>Greeting<input value={greeting} onChange={(event) => setGreeting(event.target.value)} /></label><label>Name<input value={name} onChange={(event) => setName(event.target.value)} /></label></div>
-            <button className="primary-button"><Download size={16} /> Download High-Res · INR 49</button>
-            <button className="generate-button"><Sparkles size={15} /> Generate Portrait</button>
+            <button className="preview-button" onClick={generatePreview} disabled={isPreviewLoading || previewCount >= 3}><Grid2X2 size={16} /> {isPreviewLoading ? "Testing..." : `Generate Free Preview (${3 - previewCount}/3)`}</button>
+            <button className={`generate-button${isAiLoading ? " working" : ""}`} onClick={generatePortrait} disabled={isAiLoading}><Sparkles size={15} /> {isAiLoading ? "Generating..." : "AI Enhance - 2K - 1.8 credits"}</button>
+            {notice && <p className="status-notice" role="status">{notice}</p>}
           </Control>
         </aside>
-
         <section className="canvas-area">
-          <div className={`portrait-canvas ${background.toLowerCase().replace(" ", "-")} ${style === "Hand-drawn" ? "drawn" : ""}`}>
-            {photo ? <img src={photo} alt="Uploaded portrait" /> : <div className="portrait-art" aria-label="Festive portrait preview"><div className="halo" /><div className="figure"><div className="head" /><div className="body" /></div><div className="lamp one" /><div className="lamp two" /></div>}
-            <div className="portrait-copy"><strong>{greeting}</strong><span>{name}</span></div>
-            <div className="crop-guide" />
-          </div>
-
-          <div className="toolbar">
-            <button title="Regenerate"><RefreshCw size={17} /><span>Regenerate</span></button><i />
-            <button title="Change layout"><Grid2X2 size={17} /><span>Layout</span></button>
-            <button title="Text size"><Type size={17} /><span>Text Size</span></button>
-            <button className="download"><Download size={17} /><span>Download High-Res · INR 49</span></button>
-          </div>
+          <div className={`portrait-canvas ${background.toLowerCase().replace(" ", "-")} ${style === "Hand-drawn" ? "drawn" : ""}`}><img src={generatedImage ?? photo ?? DEFAULT_PORTRAIT} alt="Festive portrait preview" />{!generatedImage && <div className="portrait-copy"><strong>{greeting}</strong><span>{name}</span></div>}<div className="crop-guide" /></div>
+          <div className="toolbar"><button title="Free preview" onClick={generatePreview}><RefreshCw size={17} /><span>New Preview</span></button><i /><button title="Change layout"><Grid2X2 size={17} /><span>Layout</span></button><button title="Text size"><Type size={17} /><span>Text Size</span></button><button className="download" title="Download selected image"><Download size={17} /><span>Download Selected</span></button></div>
+          <div className="history-strip"><div className="history-title"><strong>History</strong><span>{history.length} saved</span></div><div className="history-list">{history.length === 0 ? <span className="history-empty">No saved images yet</span> : history.map((item) => <button key={item.id} className={generatedImage === item.url ? "selected" : ""} onClick={() => setGeneratedImage(item.url)} title={item.kind === "ai" ? "2K AI image" : "512px preview"}><img src={item.url} alt="Saved generation" /><small>{item.kind === "ai" ? "2K AI" : "PREVIEW"}</small></button>)}</div></div>
         </section>
       </div>
     </main>
@@ -82,3 +139,4 @@ export default function Home() {
 function Control({ title, active = false, children }: { title: string; active?: boolean; children: React.ReactNode }) {
   return <section className="control"><h2 className={active ? "active" : ""}>{title}</h2><div className="control-body">{children}</div></section>;
 }
+

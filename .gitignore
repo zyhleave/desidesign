@@ -20,6 +20,10 @@
 # production
 /build
 
+# locally generated previews and AI images
+/public/generated/*
+!/public/generated/.gitkeep
+
 # misc
 .DS_Store
 *.pem
