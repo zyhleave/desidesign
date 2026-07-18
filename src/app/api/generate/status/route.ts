@@ -1,9 +1,5 @@
 import { NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import { existsSync } from "fs";
-import path from "path";
-
-const SAVE_DIR = path.join(process.cwd(), "public", "generated");
+import { saveFile, fileExists } from "@/lib/storage";
 
 export async function GET(request: Request) {
   const apiKey = process.env.EVOLINK_API_KEY;
@@ -18,21 +14,17 @@ export async function GET(request: Request) {
   if (!response.ok) return NextResponse.json({ error: data?.error?.message || data?.message || `Task lookup failed (${response.status}).` }, { status: response.status });
   if (data?.error?.message) return NextResponse.json({ status: "failed", error: data.error.message });
 
-  // When completed, download the image and save locally
   if (data?.status === "completed" && data?.results?.[0]) {
     const imgUrl = data.results[0];
-    const ext = path.extname(new URL(imgUrl).pathname) || ".jpg";
+    const ext = ".jpg";
     const filename = `${taskId}${ext}`;
-    const localPath = path.join(SAVE_DIR, filename);
 
-    if (!existsSync(localPath)) {
+    if (!(await fileExists(filename))) {
       try {
-        await mkdir(SAVE_DIR, { recursive: true });
         const imgRes = await fetch(imgUrl);
         const buffer = Buffer.from(await imgRes.arrayBuffer());
-        await writeFile(localPath, buffer);
+        await saveFile(filename, buffer);
       } catch {
-        // fallback to remote URL if download fails
         return NextResponse.json({ status: "completed", progress: 100, results: [imgUrl], local: false });
       }
     }

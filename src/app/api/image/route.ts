@@ -1,8 +1,7 @@
-import { readFile } from "fs/promises";
-import path from "path";
 import { NextResponse } from "next/server";
+import { readFileBytes } from "@/lib/storage";
+import path from "path";
 
-const SAVE_DIR = path.join(process.cwd(), "public", "generated");
 const CONTENT_TYPES: Record<string, string> = {
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
@@ -17,13 +16,9 @@ export async function GET(request: Request) {
   if (path.basename(filename) !== filename || !CONTENT_TYPES[extension]) {
     return NextResponse.json({ error: "Invalid image filename." }, { status: 400 });
   }
-
-  try {
-    const image = await readFile(path.join(SAVE_DIR, filename));
-    return new NextResponse(image, {
-      headers: { "Content-Type": CONTENT_TYPES[extension], "Cache-Control": "no-store" },
-    });
-  } catch {
-    return NextResponse.json({ error: "Image not found." }, { status: 404 });
-  }
+  const image = await readFileBytes(filename);
+  if (!image) return NextResponse.json({ error: "Image not found." }, { status: 404 });
+  return new NextResponse(image, {
+    headers: { "Content-Type": CONTENT_TYPES[extension], "Cache-Control": "no-store" },
+  });
 }

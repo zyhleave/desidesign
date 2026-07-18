@@ -1,0 +1,10 @@
+name = "desidesign"
+compatibility_date = "2026-07-17"
+compatibility_flags = ["nodejs_compat"]
+
+pages_build_output_dir = ".vercel/output/static"
+
+# R2 disabled for now (credit card required)
+# [[r2_buckets]]
+# binding = "R2_BUCKET"
+# bucket_name = "desidesign-images"

@@ -2,20 +2,26 @@
 
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { CircleUserRound, Cloud, Download, Grid2X2, RefreshCw, Sparkles, Type, Upload } from "lucide-react";
+import { SCENES, type SceneId } from "@/lib/scenes";
 
-const backgrounds = ["Fireworks", "Diyas", "Rangoli"];
+const GREETING_PRESETS = [
+  "May your Deepavali be full of light and love.",
+  "Shubh Deepavali. Wishing you abundant wealth and peace.",
+  "Light, laughter, and a glowing new beginning!",
+];
 const DEFAULT_PORTRAIT = "https://lh3.googleusercontent.com/aida/AP1WRLukS6C5H3MfhPMbQ116CUN6KKerEkRxMTXgNNPQQHWMOuHigg4t2xt6YuZDLpwXT9yjK7Y1PNdedhnHC0Esj2bU7bHiq1on1B2n95qBGopAcJIL0ANmmK8p0B4cZ7gijieHhKZdBj9g1RqOQvqM4eHQj9jHy7oX568RlwEZVz4FKaNdZXRFzYNPw1RVYaG0Ecbk0fzqdW07W-YRyZXs7YW04R7bnzqIXuKzm6dPPyFTbFSnKEPqwxyyUDA";
 
 type HistoryItem = { id: string; url: string; kind: "preview" | "ai"; createdAt?: string };
 
 export default function Home() {
   const [portraitType, setPortraitType] = useState("Solo");
-  const [background, setBackground] = useState("Fireworks");
+  const [sceneId, setSceneId] = useState<SceneId>("fireworks");
   const [style, setStyle] = useState("Modern Flat");
   const [attire, setAttire] = useState("Traditional Ethnic");
   const [greeting, setGreeting] = useState("Happy Diwali");
   const [name, setName] = useState("YH & Family");
   const [photo, setPhoto] = useState<string | null>(null);
+  const [photoBase64, setPhotoBase64] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
@@ -43,9 +49,9 @@ export default function Home() {
     return () => { active = false; };
   }, []);
 
-  function handlePhoto(event: ChangeEvent<HTMLInputElement>) {
+  async function handlePhoto(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
-    if (file) setPhoto(URL.createObjectURL(file));
+    if (file) { setPhoto(URL.createObjectURL(file)); const reader = new FileReader(); reader.onload = () => setPhotoBase64(reader.result as string); reader.readAsDataURL(file); }
   }
 
   async function generatePreview() {
@@ -56,8 +62,8 @@ export default function Home() {
     setIsPreviewLoading(true);
     setNotice("Testing your composition...");
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      const response = await fetch("/api/preview", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ background, greeting, name }) });
+      const scene = SCENES.find((item) => item.id === sceneId) ?? SCENES[0];
+      const response = await fetch("/api/preview", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ background: scene.legacyName, greeting, name, photo: photoBase64 }) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Could not create preview.");
       setGeneratedImage(data.url);
@@ -73,13 +79,27 @@ export default function Home() {
     }
   }
 
+
+  function downloadImage() {
+    const url = generatedImage;
+    if (!url) { setNotice("No image to download. Generate one first."); return; }
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "desidesign-" + Date.now() + ".jpg";
+    anchor.click();
+  }
+
+  function resetPreviewCount() {
+    setPreviewCount(0);
+    localStorage.removeItem("desidesign-preview-count");
+    setNotice("Free previews reset. You have 3 tries.");
+  }
+
   async function generatePortrait() {
     setIsAiLoading(true);
     setNotice("Starting 2K AI generation...");
-    const subject = portraitType === "Couple" ? "an Indian couple" : "one Indian person";
-    const prompt = `A premium square Diwali portrait illustration featuring ${subject}. ${attire}, ${background.toLowerCase()} celebration background, ${style.toLowerCase()} illustration style. Warm joyful expression, culturally respectful details, polished commercial social media artwork, centered composition. No text, no letters, no watermark, no logo.`;
     try {
-      const createResponse = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prompt }) });
+      const createResponse = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sceneId, portraitType, attire, style, photo: photoBase64 }) });
       const createData = await createResponse.json();
       if (!createResponse.ok) throw new Error(createData.error || "Could not start generation.");
       const deadline = Date.now() + 120_000;
@@ -111,27 +131,28 @@ export default function Home() {
       <header className="topbar"><div className="topbar-inner"><div className="brand">DesiDesign</div><div className="saved"><Cloud size={16} /> Saved locally</div><div className="top-actions"><button>Saved</button><button className="icon-button" aria-label="Account"><CircleUserRound size={22} /></button></div></div></header>
       <div className="workspace">
         <aside className="sidebar">
-          <div className="studio-heading"><p>PORTRAIT STUDIO</p><span>Create your festive avatar</span></div>
+          <div className="studio-heading"><p>PORTRAIT STUDIO</p><span>AI Diwali photo editor for festive avatars</span></div>
           <Control title="PORTRAIT TYPE" active><div className="segmented three">{["Solo", "Couple"].map((item) => <button key={item} className={portraitType === item ? "selected" : ""} onClick={() => setPortraitType(item)}>{item}</button>)}<button disabled><span>Family</span><small>SOON</small></button></div></Control>
           <Control title="PHOTO UPLOAD"><label className="upload-box"><Upload size={29} /><span>{photo ? "Photo ready - preview only" : "Drop photo or click to browse"}</span><input type="file" accept="image/*" onChange={handlePhoto} /></label></Control>
           <Control title="CHOOSE LOOK">
             <div className="field"><label>ATTIRE</label><select value={attire} onChange={(event) => setAttire(event.target.value)}><option>Traditional Ethnic</option><option>Elegant Festive</option><option>Keep Original</option></select></div>
-            <div className="field"><label>BACKGROUND</label><div className="background-grid">{backgrounds.map((item) => <button key={item} className={background === item ? "selected" : ""} onClick={() => setBackground(item)}><span className={`swatch ${item.toLowerCase()}`} />{item}</button>)}</div></div>
+            <div className="field"><label>CHOOSE YOUR FESTIVE STORY</label><div className="scene-list">{SCENES.map((scene) => <button key={scene.id} className={sceneId === scene.id ? "selected" : ""} onClick={() => { setSceneId(scene.id); if (previewCount < 3) setTimeout(generatePreview, 100); }}><span className={`scene-swatch ${scene.id}`} aria-hidden="true" /><span className="scene-copy"><strong>{scene.title}</strong><small>{scene.subtitle}</small></span></button>)}</div></div>
             <div className="field"><label>STYLE</label><div className="segmented">{["Hand-drawn", "Modern Flat"].map((item) => <button key={item} className={style === item ? "selected" : ""} onClick={() => setStyle(item)}>{item}</button>)}</div></div>
           </Control>
           <Control title="PERSONALIZE">
-            <div className="form-stack"><label>Greeting<input value={greeting} onChange={(event) => setGreeting(event.target.value)} /></label><label>Name<input value={name} onChange={(event) => setName(event.target.value)} /></label></div>
-            <button className="preview-button" onClick={generatePreview} disabled={isPreviewLoading || previewCount >= 3}><Grid2X2 size={16} /> {isPreviewLoading ? "Testing..." : `Generate Free Preview (${3 - previewCount}/3)`}</button>
-            <button className={`generate-button${isAiLoading ? " working" : ""}`} onClick={generatePortrait} disabled={isAiLoading}><Sparkles size={15} /> {isAiLoading ? "Generating..." : "AI Enhance - 2K - 1.8 credits"}</button>
+            <div className="form-stack"><label>Greeting<input value={greeting} onChange={(event) => setGreeting(event.target.value)} maxLength={72} /></label><div className="greeting-presets">{GREETING_PRESETS.map((preset, index) => <button key={preset} onClick={() => { setGreeting(preset); setGeneratedImage(null); if (previewCount < 3) setTimeout(generatePreview, 200); }} title={preset}>{index === 0 ? "Light & love" : index === 1 ? "Wealth & peace" : "New beginning"}</button>)}</div><label>Name<input value={name} onChange={(event) => setName(event.target.value)} maxLength={40} /></label><p className="text-note">Your words are typeset as a crisp overlay, separate from the AI artwork.</p></div>
+            <div className="preview-row"><button className="preview-button" onClick={generatePreview} disabled={isPreviewLoading || previewCount >= 3}><Grid2X2 size={16} /> {isPreviewLoading ? "Testing..." : previewCount >= 3 ? "Free previews used (3/3)" : `Generate Free Preview (${3 - previewCount}/3)`}</button>{previewCount >= 3 && <button className="reset-preview-btn" onClick={resetPreviewCount} title="Reset preview count">Reset</button>}</div>
+            <button className="generate-button disabled" disabled title="Coming soon"><Sparkles size={15} /> AI Enhance - 2K - Coming soon</button>
             {notice && <p className="status-notice" role="status">{notice}</p>}
           </Control>
         </aside>
         <section className="canvas-area">
-          <div className={`portrait-canvas ${background.toLowerCase().replace(" ", "-")} ${style === "Hand-drawn" ? "drawn" : ""}`}><img src={generatedImage ?? photo ?? DEFAULT_PORTRAIT} alt="Festive portrait preview" />{!generatedImage && <div className="portrait-copy"><strong>{greeting}</strong><span>{name}</span></div>}<div className="crop-guide" /></div>
-          <div className="toolbar"><button title="Free preview" onClick={generatePreview}><RefreshCw size={17} /><span>New Preview</span></button><i /><button title="Change layout"><Grid2X2 size={17} /><span>Layout</span></button><button title="Text size"><Type size={17} /><span>Text Size</span></button><button className="download" title="Download selected image"><Download size={17} /><span>Download Selected</span></button></div>
+          <div className={`portrait-canvas ${sceneId} ${style === "Hand-drawn" ? "drawn" : ""}`}><img src={generatedImage ?? photo ?? DEFAULT_PORTRAIT} alt="Festive portrait preview" />{!generatedImage && <div className="portrait-copy"><strong>{greeting}</strong><span>{name}</span></div>}<div className="crop-guide" /></div>
+          <div className="toolbar"><button title="Free preview" onClick={generatePreview}><RefreshCw size={17} /><span>New Preview</span></button><i /><button title="Change layout"><Grid2X2 size={17} /><span>Layout</span></button><button title="Text size"><Type size={17} /><span>Text Size</span></button><button className="download" onClick={downloadImage} title="Download selected image"><Download size={17} /><span>Download Selected</span></button></div>
           <div className="history-strip"><div className="history-title"><strong>History</strong><span>{history.length} saved</span></div><div className="history-list">{history.length === 0 ? <span className="history-empty">No saved images yet</span> : history.map((item) => <button key={item.id} className={generatedImage === item.url ? "selected" : ""} onClick={() => setGeneratedImage(item.url)} title={item.kind === "ai" ? "2K AI image" : "512px preview"}><img src={item.url} alt="Saved generation" /><small>{item.kind === "ai" ? "2K AI" : "PREVIEW"}</small></button>)}</div></div>
         </section>
       </div>
+      <footer className="editorial-footer"><div><h2>AI Diwali Photo Editor</h2><p>DesiDesign turns portraits into personalized Indian festive greetings with curated fireworks, diya, and Rangoli scenes.</p></div><div><h2>Made for your story</h2><p>Upload a portrait, choose a festive story, and add a greeting and family name as a crisp, editable text layer.</p></div><div><h2>Preview before 2K</h2><p>Explore the composition with a free local preview, then create a polished 2K AI artwork when the design feels right.</p></div></footer>
     </main>
   );
 }
