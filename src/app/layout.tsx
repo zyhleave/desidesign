@@ -29,14 +29,14 @@ export const metadata: Metadata = {
     title: "DesiDesign · Diwali Marketing Studio for Indian Businesses",
     description:
       "Create Diwali posters, banners, and greeting cards with AI. Culturally accurate, text-perfect, made for Indian small businesses.",
-    images: [{ url: "/og-cover.jpg", width: 1200, height: 630, alt: "DesiDesign" }],
+    // images: adding a branded OG image is a W30 task
   },
   twitter: {
     card: "summary_large_image",
     title: "DesiDesign · Diwali Marketing Studio",
     description:
       "AI Diwali design for Indian small businesses. Culturally accurate, text-perfect.",
-    images: ["/og-cover.jpg"],
+    // images: adding a branded OG image is a W30 task
   },
   alternates: { canonical: "/" },
   robots: { index: true, follow: true },
