@@ -105,7 +105,7 @@ export default function DiwaliPhotoFrameFree() {
           {[
             {
               title: "Completely Free — No Hidden Charges",
-              desc: "Every Diwali photo frame is free to create and download. No "pro" paywall to unlock HD quality.",
+              desc: "Every Diwali photo frame is free to create and download. No 'pro' paywall to unlock HD quality.",
             },
             {
               title: "Works on Any Device",
