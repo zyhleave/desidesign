@@ -6,6 +6,7 @@ import type { MetadataRoute } from "next";
  */
 const LIVE_SLUGS = [
   "diwali-card-maker",
+  "diwali-photo-frame-free",
 ];
 
 /**
