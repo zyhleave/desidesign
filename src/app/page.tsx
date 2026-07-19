@@ -9,7 +9,6 @@ const GREETING_PRESETS = [
   "Shubh Deepavali. Wishing you abundant wealth and peace.",
   "Light, laughter, and a glowing new beginning!",
 ];
-const DEFAULT_PORTRAIT = "https://lh3.googleusercontent.com/aida/AP1WRLukS6C5H3MfhPMbQ116CUN6KKerEkRxMTXgNNPQQHWMOuHigg4t2xt6YuZDLpwXT9yjK7Y1PNdedhnHC0Esj2bU7bHiq1on1B2n95qBGopAcJIL0ANmmK8p0B4cZ7gijieHhKZdBj9g1RqOQvqM4eHQj9jHy7oX568RlwEZVz4FKaNdZXRFzYNPw1RVYaG0Ecbk0fzqdW07W-YRyZXs7YW04R7bnzqIXuKzm6dPPyFTbFSnKEPqwxyyUDA";
 
 type HistoryItem = { id: string; url: string; kind: "preview" | "ai"; createdAt?: string };
 
@@ -147,7 +146,7 @@ export default function Home() {
           </Control>
         </aside>
         <section className="canvas-area">
-          <div className={`portrait-canvas ${sceneId} ${style === "Hand-drawn" ? "drawn" : ""}`}><img src={generatedImage ?? photo ?? DEFAULT_PORTRAIT} alt="Festive portrait preview" />{!generatedImage && <div className="portrait-copy"><strong>{greeting}</strong><span>{name}</span></div>}<div className="crop-guide" /></div>
+          <div className={`portrait-canvas ${sceneId} ${style === "Hand-drawn" ? "drawn" : ""}`}><img src={generatedImage ?? photo ?? undefined} alt="Festive portrait preview" />{!generatedImage && <div className="portrait-copy"><strong>{greeting}</strong><span>{name}</span></div>}<div className="crop-guide" /></div>
           <div className="toolbar"><button title="Free preview" onClick={generatePreview}><RefreshCw size={17} /><span>New Preview</span></button><i /><button title="Change layout"><Grid2X2 size={17} /><span>Layout</span></button><button title="Text size"><Type size={17} /><span>Text Size</span></button><button className="download" onClick={downloadImage} title="Download selected image"><Download size={17} /><span>Download Selected</span></button></div>
           <div className="history-strip"><div className="history-title"><strong>History</strong><span>{history.length} saved</span></div><div className="history-list">{history.length === 0 ? <span className="history-empty">No saved images yet</span> : history.map((item) => <button key={item.id} className={generatedImage === item.url ? "selected" : ""} onClick={() => setGeneratedImage(item.url)} title={item.kind === "ai" ? "2K AI image" : "512px preview"}><img src={item.url} alt="Saved generation" /><small>{item.kind === "ai" ? "2K AI" : "PREVIEW"}</small></button>)}</div></div>
         </section>
