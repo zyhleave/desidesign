@@ -164,6 +164,10 @@ export default function Home() {
             <strong>Diwali Photo Frame</strong>
             <span>Add a festive Diwali frame to your photo — free, HD download</span>
           </a>
+          <a className="tool-card" href="/happy-diwali-post-generator">
+            <strong>Diwali Post Generator</strong>
+            <span>Make share-ready Diwali posts for Instagram & WhatsApp — free</span>
+          </a>
         </div>
       </section>
       <footer className="editorial-footer"><div><h2>AI Diwali Photo Editor</h2><p>DesiDesign turns portraits into personalized Indian festive greetings with curated fireworks, diya, and Rangoli scenes.</p></div><div><h2>Made for your story</h2><p>Upload a portrait, choose a festive story, and add a greeting and family name as a crisp, editable text layer.</p></div><div><h2>Preview before 2K</h2><p>Explore the composition with a free local preview, then create a polished 2K AI artwork when the design feels right.</p></div></footer>
