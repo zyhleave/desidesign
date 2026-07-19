@@ -152,6 +152,20 @@ export default function Home() {
           <div className="history-strip"><div className="history-title"><strong>History</strong><span>{history.length} saved</span></div><div className="history-list">{history.length === 0 ? <span className="history-empty">No saved images yet</span> : history.map((item) => <button key={item.id} className={generatedImage === item.url ? "selected" : ""} onClick={() => setGeneratedImage(item.url)} title={item.kind === "ai" ? "2K AI image" : "512px preview"}><img src={item.url} alt="Saved generation" /><small>{item.kind === "ai" ? "2K AI" : "PREVIEW"}</small></button>)}</div></div>
         </section>
       </div>
+      <section className="tools-listing" aria-label="More free Diwali design tools">
+        <h2>More Free Diwali Design Tools</h2>
+        <p className="tools-sub">Pick a tool to create your festive designs in 1 click — all free, no signup.</p>
+        <div className="tools-grid">
+          <a className="tool-card" href="/diwali-card-maker">
+            <strong>Diwali Card Maker</strong>
+            <span>Create greeting cards with AI — text-perfect, culturally accurate</span>
+          </a>
+          <a className="tool-card" href="/diwali-photo-frame-free">
+            <strong>Diwali Photo Frame</strong>
+            <span>Add a festive Diwali frame to your photo — free, HD download</span>
+          </a>
+        </div>
+      </section>
       <footer className="editorial-footer"><div><h2>AI Diwali Photo Editor</h2><p>DesiDesign turns portraits into personalized Indian festive greetings with curated fireworks, diya, and Rangoli scenes.</p></div><div><h2>Made for your story</h2><p>Upload a portrait, choose a festive story, and add a greeting and family name as a crisp, editable text layer.</p></div><div><h2>Preview before 2K</h2><p>Explore the composition with a free local preview, then create a polished 2K AI artwork when the design feels right.</p></div></footer>
     </main>
   );
