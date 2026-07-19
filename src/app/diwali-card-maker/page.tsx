@@ -52,10 +52,8 @@ const data: LandingPageData = {
     },
   ],
   relatedSlugs: [
-    "diwali-poster-maker",
-    "diwali-banner-maker",
-    "diwali-greeting-card-maker",
-    "ai-diwali-image-generator",
+    "diwali-photo-frame-free",
+    "happy-diwali-post-generator",
   ],
 };
 

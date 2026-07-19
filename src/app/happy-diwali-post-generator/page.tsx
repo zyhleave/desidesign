@@ -17,7 +17,6 @@ export const metadata: Metadata = {
     title: "Free Happy Diwali Post Generator – AI-Powered",
     description:
       "Generate festive Diwali posts for any platform. Free, no signup, Hindu calendar accurate.",
-    images: [{ url: "/og-cover.jpg", width: 1200, height: 630 }],
   },
 };
 
@@ -149,7 +148,6 @@ export default function HappyDiwaliPostGenerator() {
             {[
               { href: "/diwali-card-maker", label: "Diwali Card Maker", desc: "Create greeting cards with AI" },
               { href: "/diwali-photo-frame-free", label: "Diwali Photo Frame", desc: "Add festive frames to photos" },
-              { href: "/diwali-banner-maker", label: "Diwali Banner Maker", desc: "Shop banners & social headers" },
             ].map(({ href, label, desc }) => (
               <Link
                 key={href}

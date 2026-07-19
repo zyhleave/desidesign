@@ -18,7 +18,6 @@ export const metadata: Metadata = {
     title: "Free Diwali Photo Frame Online – AI-Powered",
     description:
       "Create beautiful Diwali photo frames instantly. No signup required. Hindu calendar accurate.",
-    images: [{ url: "/og-cover.jpg", width: 1200, height: 630 }],
   },
 };
 
@@ -148,8 +147,7 @@ export default function DiwaliPhotoFrameFree() {
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
             {[
               { href: "/diwali-card-maker", label: "Diwali Card Maker", desc: "Create greeting cards with AI" },
-              { href: "/diwali-banner-maker", label: "Diwali Banner Maker", desc: "Shop banners & social headers" },
-              { href: "/diwali-poster-maker", label: "Diwali Poster Maker", desc: "Festival posters in 1 click" },
+              { href: "/happy-diwali-post-generator", label: "Diwali Post Generator", desc: "Make share-ready posts for Instagram" },
             ].map(({ href, label, desc }) => (
               <Link
                 key={href}
