@@ -179,3 +179,4 @@ function Control({ title, active = false, children }: { title: string; active?: 
   return <section className="control"><h2 className={active ? "active" : ""}>{title}</h2><div className="control-body">{children}</div></section>;
 }
 
+
