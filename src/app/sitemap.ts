@@ -9,6 +9,7 @@ const LIVE_SLUGS = [
   "diwali-photo-frame-free",
   "happy-diwali-post-generator",
   "shubh-diwali-wishes-image",
+  "diwali-wishes-card-maker",
 ];
 
 /**

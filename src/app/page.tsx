@@ -167,6 +167,14 @@ export default function Home() {
             <strong>Diwali Post Generator</strong>
             <span>Make share-ready Diwali posts for Instagram & WhatsApp — free</span>
           </a>
+          <a className="tool-card" href="/shubh-diwali-wishes-image">
+            <strong>Shubh Diwali Wishes</strong>
+            <span>Create Shubh Diwali wishes images with Hindi & English greetings</span>
+          </a>
+          <a className="tool-card" href="/diwali-wishes-card-maker">
+            <strong>Diwali Wishes Card Maker</strong>
+            <span>Personalized Diwali greeting cards in Hindi & English — free</span>
+          </a>
         </div>
       </section>
       <footer className="editorial-footer"><div><h2>AI Diwali Photo Editor</h2><p>DesiDesign turns portraits into personalized Indian festive greetings with curated fireworks, diya, and Rangoli scenes.</p></div><div><h2>Made for your story</h2><p>Upload a portrait, choose a festive story, and add a greeting and family name as a crisp, editable text layer.</p></div><div><h2>Preview before 2K</h2><p>Explore the composition with a free local preview, then create a polished 2K AI artwork when the design feels right.</p></div></footer>
