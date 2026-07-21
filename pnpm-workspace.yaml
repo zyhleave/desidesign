@@ -1,4 +1,1 @@
-allowBuilds:
-  sharp: true
-ignoredBuiltDependencies:
-  - unrs-resolver
+# pnpm workspace config

@@ -2,6 +2,7 @@
 
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { CircleUserRound, Cloud, Download, Grid2X2, RefreshCw, Sparkles, Type, Upload } from "lucide-react";
+import AuthButton from "@/components/AuthButton";
 import { SCENES, type SceneId } from "@/lib/scenes";
 
 const GREETING_PRESETS = [
@@ -127,7 +128,7 @@ export default function Home() {
 
   return (
     <main className="app-shell">
-      <header className="topbar"><div className="topbar-inner"><div className="brand">DesiDesign</div><div className="saved"><Cloud size={16} /> Saved locally</div><div className="top-actions"><button>Saved</button><button className="icon-button" aria-label="Account"><CircleUserRound size={22} /></button></div></div></header>
+      <header className="topbar"><div className="topbar-inner"><div className="brand">DesiDesign</div><div className="saved"><Cloud size={16} /> Saved locally</div><div className="top-actions"><button>Saved</button><AuthButton /></div></div></header>
       <div className="workspace">
         <aside className="sidebar">
           <div className="studio-heading"><p>PORTRAIT STUDIO</p><span>AI Diwali photo editor for festive avatars</span></div>
