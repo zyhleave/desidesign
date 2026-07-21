@@ -19,8 +19,9 @@ export async function GET() {
     }
   }
 
-  await testUrl("supabase_health", "https://csvlqtrzmscrumeuyvqip.supabase.co/auth/v1/health")
-  await testUrl("supabase_rest", "https://csvlqtrzmscrumeuyvqip.supabase.co/rest/v1/")
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  await testUrl("supabase_health", `${supabaseUrl}/auth/v1/health`)
+  await testUrl("supabase_rest", `${supabaseUrl}/rest/v1/`)
   await testUrl("google", "https://accounts.google.com/.well-known/openid-configuration")
   await testUrl("github", "https://api.github.com")
 
