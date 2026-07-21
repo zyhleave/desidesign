@@ -18,7 +18,7 @@ export async function GET(request: Request) {
   }
   const image = await readFileBytes(filename);
   if (!image) return NextResponse.json({ error: "Image not found." }, { status: 404 });
-  return new NextResponse(image, {
+  return new NextResponse(new Uint8Array(image), {
     headers: { "Content-Type": CONTENT_TYPES[extension], "Cache-Control": "no-store" },
   });
 }
