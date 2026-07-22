@@ -156,25 +156,9 @@ export default function Home() {
         <h2>More Free Diwali Design Tools</h2>
         <p className="tools-sub">Pick a tool to create your festive designs in 1 click — all free, no signup.</p>
         <div className="tools-grid">
-          <a className="tool-card" href="/diwali-card-maker">
-            <strong>Diwali Card Maker</strong>
-            <span>Create greeting cards with AI — text-perfect, culturally accurate</span>
-          </a>
-          <a className="tool-card" href="/diwali-photo-frame-free">
-            <strong>Diwali Photo Frame</strong>
-            <span>Add a festive Diwali frame to your photo — free, HD download</span>
-          </a>
           <a className="tool-card" href="/happy-diwali-post-generator">
             <strong>Diwali Post Generator</strong>
             <span>Make share-ready Diwali posts for Instagram & WhatsApp — free</span>
-          </a>
-          <a className="tool-card" href="/shubh-diwali-wishes-image">
-            <strong>Shubh Diwali Wishes</strong>
-            <span>Create Shubh Diwali wishes images with Hindi & English greetings</span>
-          </a>
-          <a className="tool-card" href="/diwali-wishes-card-maker">
-            <strong>Diwali Wishes Card Maker</strong>
-            <span>Personalized Diwali greeting cards in Hindi & English — free</span>
           </a>
         </div>
       </section>

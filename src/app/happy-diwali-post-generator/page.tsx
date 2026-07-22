@@ -47,10 +47,10 @@ export default function HappyDiwaliPostGenerator() {
             Generate Your Diwali Post — Free
           </a>
           <Link
-            href="/diwali-photo-frame-free"
+            href="/"
             className="inline-block px-8 py-4 text-lg font-semibold text-orange-700 bg-white hover:bg-orange-50 rounded-xl border border-orange-200 transition-colors"
           >
-            Browse More Tools →
+            Explore DesiDesign →
           </Link>
         </div>
       </section>
@@ -135,30 +135,6 @@ export default function HappyDiwaliPostGenerator() {
               </div>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* Related Tools */}
-      <section className="px-4 py-12 bg-white">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
-            More Free Diwali Design Tools
-          </h2>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {[
-              { href: "/diwali-card-maker", label: "Diwali Card Maker", desc: "Create greeting cards with AI" },
-              { href: "/diwali-photo-frame-free", label: "Diwali Photo Frame", desc: "Add festive frames to photos" },
-            ].map(({ href, label, desc }) => (
-              <Link
-                key={href}
-                href={href}
-                className="block p-4 bg-orange-50 hover:bg-orange-100 rounded-xl transition-colors border border-orange-100"
-              >
-                <div className="font-semibold text-orange-700 mb-1">{label}</div>
-                <div className="text-sm text-gray-600">{desc} →</div>
-              </Link>
-            ))}
-          </div>
         </div>
       </section>
 

@@ -5,11 +5,7 @@ import type { MetadataRoute } from "next";
  * 新增落地页时，往这里加 slug + 在 src/app/<slug>/page.tsx 创建对应路由
  */
 const LIVE_SLUGS = [
-  "diwali-card-maker",
-  "diwali-photo-frame-free",
   "happy-diwali-post-generator",
-  "shubh-diwali-wishes-image",
-  "diwali-wishes-card-maker",
 ];
 
 /**
