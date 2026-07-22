@@ -60,5 +60,3 @@ GET /api/check-supabase
 ```
 
 Returns connectivity status for Supabase, Google, and GitHub. Useful after deployment.
-
-# Deployment trigger
