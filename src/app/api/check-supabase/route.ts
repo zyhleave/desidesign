@@ -24,6 +24,8 @@ export async function GET() {
   // Debug: show what URL we're using
   results["_debug"] = {
     supabaseUrl: supabaseUrl ?? "(undefined)",
+    siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "(undefined)",
+    vercelUrl: process.env.VERCEL_URL ?? "(undefined)",
     nodeEnv: process.env.NODE_ENV ?? "(undefined)",
   }
   
