@@ -20,22 +20,8 @@ export async function GET() {
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  
-  // Debug: show what URL we're using
-  results["_debug"] = {
-    supabaseUrl: supabaseUrl ?? "(undefined)",
-    siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "(undefined)",
-    vercelUrl: process.env.VERCEL_URL ?? "(undefined)",
-    nodeEnv: process.env.NODE_ENV ?? "(undefined)",
-  }
-  
-  if (!supabaseUrl) {
-    results["supabase_health"] = "Error: NEXT_PUBLIC_SUPABASE_URL is not set"
-    results["supabase_rest"] = "Error: NEXT_PUBLIC_SUPABASE_URL is not set"
-  } else {
-    await testUrl("supabase_health", `${supabaseUrl}/auth/v1/health`)
-    await testUrl("supabase_rest", `${supabaseUrl}/rest/v1/`)
-  }
+  await testUrl("supabase_health", `${supabaseUrl}/auth/v1/health`)
+  await testUrl("supabase_rest", `${supabaseUrl}/rest/v1/`)
   
   await testUrl("google", "https://accounts.google.com/.well-known/openid-configuration")
   await testUrl("github", "https://api.github.com")
