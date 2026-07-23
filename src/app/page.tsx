@@ -3,6 +3,7 @@
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { CircleUserRound, Cloud, Download, Grid2X2, RefreshCw, Sparkles, Type, Upload } from "lucide-react";
 import AuthButton from "@/components/AuthButton";
+import LoginModal from "@/components/LoginModal";
 import { SCENES, type SceneId } from "@/lib/scenes";
 
 const GREETING_PRESETS = [
@@ -23,6 +24,7 @@ export default function Home() {
   const [photo, setPhoto] = useState<string | null>(null);
   const [photoBase64, setPhotoBase64] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
   const [isAiLoading, setIsAiLoading] = useState(false);
@@ -80,13 +82,22 @@ export default function Home() {
   }
 
 
-  function downloadImage() {
+  async function downloadImage() {
     const url = generatedImage;
     if (!url) { setNotice("No image to download. Generate one first."); return; }
+    // Check auth before download
+    const { createClient } = await import("@/lib/supabase/client");
+    const supabase = createClient();
+    const { data } = await supabase.auth.getUser();
+    if (!data.user) {
+      setShowLoginModal(true);
+      return;
+    }
     const anchor = document.createElement("a");
     anchor.href = url;
     anchor.download = "desidesign-" + Date.now() + ".jpg";
     anchor.click();
+    setNotice("Download started!");
   }
 
   function resetPreviewCount() {
@@ -162,6 +173,7 @@ export default function Home() {
           </a>
         </div>
       </section>
+      {showLoginModal && <LoginModal onClose={() => setShowLoginModal(false)} onSuccess={() => setNotice("Logged in! You can now download.")} />}
       <footer className="editorial-footer"><div><h2>AI Diwali Photo Editor</h2><p>DesiDesign turns portraits into personalized Indian festive greetings with curated fireworks, diya, and Rangoli scenes.</p></div><div><h2>Made for your story</h2><p>Upload a portrait, choose a festive story, and add a greeting and family name as a crisp, editable text layer.</p></div><div><h2>Preview before 2K</h2><p>Explore the composition with a free local preview, then create a polished 2K AI artwork when the design feels right.</p></div></footer>
     </main>
   );
