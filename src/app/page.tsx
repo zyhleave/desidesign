@@ -1,9 +1,10 @@
 "use client";
 
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState, useRef } from "react";
 import { CircleUserRound, Cloud, Download, Grid2X2, RefreshCw, Sparkles, Type, Upload } from "lucide-react";
 import AuthButton from "@/components/AuthButton";
 import LoginModal from "@/components/LoginModal";
+import WaitlistModal from "@/components/WaitlistModal";
 import { SCENES, type SceneId } from "@/lib/scenes";
 
 const GREETING_PRESETS = [
@@ -25,11 +26,23 @@ export default function Home() {
   const [photoBase64, setPhotoBase64] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showWaitlist, setShowWaitlist] = useState(false);
+  const prevPreviewCount = useRef(0);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [previewCount, setPreviewCount] = useState(0);
   const [history, setHistory] = useState<HistoryItem[]>([]);
+
+  // Show waitlist popup after first successful preview
+  useEffect(() => {
+    const prev = prevPreviewCount.current;
+    prevPreviewCount.current = previewCount;
+    if (prev === 0 && previewCount >= 1 && generatedImage && !sessionStorage.getItem("waitlist_shown")) {
+      sessionStorage.setItem("waitlist_shown", "1");
+      setShowWaitlist(true);
+    }
+  }, [previewCount, generatedImage]);
 
   const loadHistory = useCallback(async () => {
     const response = await fetch("/api/history", { cache: "no-store" });
@@ -163,6 +176,32 @@ export default function Home() {
           <div className="history-strip"><div className="history-title"><strong>History</strong><span>{history.length} saved</span></div><div className="history-list">{history.length === 0 ? <span className="history-empty">No saved images yet</span> : history.map((item) => <button key={item.id} className={generatedImage === item.url ? "selected" : ""} onClick={() => setGeneratedImage(item.url)} title={item.kind === "ai" ? "2K AI image" : "512px preview"}><img src={item.url} alt="Saved generation" /><small>{item.kind === "ai" ? "2K AI" : "PREVIEW"}</small></button>)}</div></div>
         </section>
       </div>
+      {/* Big CTA banner */}
+      <section style={{
+        background: "linear-gradient(135deg, #f97316 0%, #f59e0b 100%)",
+        padding: "28px 24px",
+        textAlign: "center",
+      }}>
+        <p style={{ color: "#fff", fontSize: 15, marginBottom: 14, opacity: 0.92, fontWeight: 500 }}>
+          Want to create Diwali posts for Instagram &amp; WhatsApp?
+        </p>
+        <a
+          href="/happy-diwali-post-generator"
+          style={{
+            display: "inline-block",
+            background: "white",
+            color: "#ea580c",
+            fontWeight: 700,
+            fontSize: 17,
+            padding: "14px 36px",
+            borderRadius: 12,
+            textDecoration: "none",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+          }}
+        >
+          Create Diwali Posts Free →
+        </a>
+      </section>
       <section className="tools-listing" aria-label="More free Diwali design tools">
         <h2>More Free Diwali Design Tools</h2>
         <p className="tools-sub">Pick a tool to create your festive designs in 1 click — all free, no signup.</p>
@@ -174,6 +213,7 @@ export default function Home() {
         </div>
       </section>
       {showLoginModal && <LoginModal onClose={() => setShowLoginModal(false)} onSuccess={() => setNotice("Logged in! You can now download.")} />}
+      {showWaitlist && <WaitlistModal onClose={() => setShowWaitlist(false)} />}
       <footer className="editorial-footer"><div><h2>AI Diwali Photo Editor</h2><p>DesiDesign turns portraits into personalized Indian festive greetings with curated fireworks, diya, and Rangoli scenes.</p></div><div><h2>Made for your story</h2><p>Upload a portrait, choose a festive story, and add a greeting and family name as a crisp, editable text layer.</p></div><div><h2>Preview before 2K</h2><p>Explore the composition with a free local preview, then create a polished 2K AI artwork when the design feels right.</p></div></footer>
     </main>
   );
