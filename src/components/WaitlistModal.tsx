@@ -41,7 +41,7 @@ export default function WaitlistModal({ onClose }: WaitlistModalProps) {
     setError(null)
     try {
       // Replace FORM_ID with your Formspree form ID from https://formspree.io
-      const FORM_ID = "YOUR_FORM_ID"
+      const FORM_ID = "maqrpyab"
       const res = await fetch(`https://formspree.io/f/${FORM_ID}`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
