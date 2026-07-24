@@ -95,7 +95,7 @@ export default function Home() {
   }
 
   // ── Core preview trigger — refs always give latest values ──
-  async function triggerPreview(counts: boolean) {
+  async function triggerPreview(counts: boolean, overrides?: { sceneId?: SceneId; greeting?: string; name?: string }) {
     if (counts && previewCountRef.current >= 3) {
       setNotice("Free previews used up (3/3). Use AI Enhance for the final 2K image.");
       return;
@@ -103,14 +103,17 @@ export default function Home() {
     setIsPreviewLoading(true);
     setNotice("Testing your composition...");
     try {
-      const scene = SCENES.find((item) => item.id === sceneIdRef.current) ?? SCENES[0];
+      // Prefer explicit overrides (set in the same tick) to avoid stale refs
+      const scene = SCENES.find((item) => item.id === (overrides?.sceneId ?? sceneIdRef.current)) ?? SCENES[0];
+      const greetingValue = overrides?.greeting ?? greetingRef.current;
+      const nameValue = overrides?.name ?? nameRef.current;
       const response = await fetch("/api/preview", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           background: scene.legacyName,
-          greeting: greetingRef.current,
-          name: nameRef.current,
+          greeting: greetingValue,
+          name: nameValue,
           photo: photoRef.current,
         }),
       });
@@ -232,11 +235,11 @@ export default function Home() {
           <div className="studio-heading"><p>PORTRAIT STUDIO</p><span>AI Diwali photo editor for festive avatars</span></div>
           <Control title="PORTRAIT TYPE"><div className="segmented three">{["Solo", "Couple"].map((item) => <button key={item} className={portraitType === item ? "selected" : ""} onClick={() => setPortraitType(item)}>{item}</button>)}<button disabled><span>Family</span><small>SOON</small></button></div></Control>
           <Control title="PHOTO UPLOAD"><label className="upload-box"><Upload size={29} /><span>{photo ? "Photo ready - preview only" : "Drop photo or click to browse"}</span><input type="file" accept="image/*" onChange={handlePhoto} /></label></Control>
-          <div className="field"><label>CHOOSE YOUR FESTIVE STORY</label><div className="scene-list">{SCENES.map((scene) => <button key={scene.id} className={sceneId === scene.id ? "selected" : ""} onClick={() => { setSceneId(scene.id); void triggerPreview(false); }}><span className={`scene-swatch ${scene.id}`} aria-hidden="true" /><span className="scene-copy"><strong>{scene.title}</strong><small>{scene.subtitle}</small></span></button>)}</div></div>
+          <div className="field"><label>CHOOSE YOUR FESTIVE STORY</label><div className="scene-list">{SCENES.map((scene) => <button key={scene.id} className={sceneId === scene.id ? "selected" : ""} onClick={() => { setSceneId(scene.id); void triggerPreview(false, { sceneId: scene.id }); }}><span className={`scene-swatch ${scene.id}`} aria-hidden="true" /><span className="scene-copy"><strong>{scene.title}</strong><small>{scene.subtitle}</small></span></button>)}</div></div>
           <div className="field"><label>STYLE</label><div className="segmented two">{["Modern Flat", "Hand-drawn"].map((item) => <button key={item} className={style === item ? "selected" : ""} onClick={() => setStyle(item)}>{item}</button>)}</div></div>
           <div className="field"><label>ATTIRE</label><div className="segmented two">{["Traditional Ethnic", "Elegant Festive"].map((item) => <button key={item} className={attire === item ? "selected" : ""} onClick={() => setAttire(item)}>{item}</button>)}<button disabled><span>Keep Original</span><small>SOON</small></button></div></div>
           <Control title="PERSONALIZE">
-            <div className="form-stack"><label>Greeting<input value={greeting} onChange={(event) => { setGreeting(event.target.value); if (textDebounceTimer.current) window.clearTimeout(textDebounceTimer.current); textDebounceTimer.current = window.setTimeout(() => triggerPreview(false), 500); }} maxLength={72} /></label><div className="greeting-presets">{GREETING_PRESETS.map((preset, index) => <button key={preset} onClick={() => { setGreeting(preset); void triggerPreview(false); }} title={preset}>{index === 0 ? "Light & love" : index === 1 ? "Wealth & peace" : "New beginning"}</button>)}</div><label>Name<input value={name} onChange={(event) => { setName(event.target.value); if (textDebounceTimer.current) window.clearTimeout(textDebounceTimer.current); textDebounceTimer.current = window.setTimeout(() => triggerPreview(false), 500); }} maxLength={40} /></label><p className="text-note">Your words are typeset as a crisp overlay, separate from the AI artwork.</p></div>
+            <div className="form-stack"><label>Greeting<input value={greeting} onChange={(event) => { setGreeting(event.target.value); if (textDebounceTimer.current) window.clearTimeout(textDebounceTimer.current); const v = event.target.value; textDebounceTimer.current = window.setTimeout(() => triggerPreview(false, { greeting: v }), 500); }} maxLength={72} /></label><div className="greeting-presets">{GREETING_PRESETS.map((preset, index) => <button key={preset} onClick={() => { setGreeting(preset); void triggerPreview(false, { greeting: preset }); }} title={preset}>{index === 0 ? "Light & love" : index === 1 ? "Wealth & peace" : "New beginning"}</button>)}</div><label>Name<input value={name} onChange={(event) => { setName(event.target.value); if (textDebounceTimer.current) window.clearTimeout(textDebounceTimer.current); const v = event.target.value; textDebounceTimer.current = window.setTimeout(() => triggerPreview(false, { name: v }), 500); }} maxLength={40} /></label><p className="text-note">Your words are typeset as a crisp overlay, separate from the AI artwork.</p></div>
             <div className="preview-row"><button className="preview-button" onClick={() => triggerPreview(true)} disabled={isPreviewLoading || previewCount >= 3}><Grid2X2 size={16} /> {isPreviewLoading ? "Testing..." : previewCount >= 3 ? "Free previews used (3/3)" : `Generate Free Preview (${3 - previewCount}/3)`}</button>{previewCount >= 3 && <button className="reset-preview-btn" onClick={resetPreviewCount} title="Reset preview count">Reset</button>}</div>
             <button className="generate-button disabled" disabled title="Coming soon"><Sparkles size={15} /> AI Enhance - 2K - Coming soon</button>
             {notice && <p className="status-notice" role="status">{notice}</p>}
