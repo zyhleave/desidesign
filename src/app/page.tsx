@@ -28,7 +28,6 @@ function pushHistory(item: HistoryItem) {
 export default function Home() {
   const [portraitType, setPortraitType] = useState("Solo");
   const [sceneId, setSceneId] = useState<SceneId>("fireworks");
-  const sceneIdRef = useRef<SceneId>("fireworks");
   const [style, setStyle] = useState("Modern Flat");
   const [attire, setAttire] = useState("Traditional Ethnic");
   const [greeting, setGreeting] = useState("Happy Diwali");
@@ -45,6 +44,22 @@ export default function Home() {
   const [previewCount, setPreviewCount] = useState(0);
   const [history, setHistory] = useState<HistoryItem[]>([]);
 
+  // ── Refs always hold the latest values (no stale closures) ──
+  const sceneIdRef = useRef(sceneId);
+  const greetingRef = useRef(greeting);
+  const nameRef = useRef(name);
+  const photoRef = useRef(photoBase64);
+  const previewCountRef = useRef(previewCount);
+  // Debounce timer for text inputs
+  const textDebounceTimer = useRef<number | null>(null);
+
+  // Keep refs in sync with state
+  sceneIdRef.current = sceneId;
+  greetingRef.current = greeting;
+  nameRef.current = name;
+  photoRef.current = photoBase64;
+  previewCountRef.current = previewCount;
+
   // Show waitlist popup after first successful preview
   useEffect(() => {
     const prev = prevPreviewCount.current;
@@ -55,7 +70,6 @@ export default function Home() {
     }
   }, [previewCount, generatedImage]);
 
-  // Auto-generate preview when user picks a scene — avoid stale closure by watching sceneId as dep
   const loadHistory = useCallback(() => {
     setHistory(readHistory());
   }, []);
@@ -70,15 +84,6 @@ export default function Home() {
     setHistory(readHistory());
   }, []);
 
-  // Track mount — skip auto-preview on first render
-  const isFirstRender = useRef(true);
-  // Auto-generate when scene changes (after first mount, skips if already loading)
-  useEffect(() => {
-    if (isFirstRender.current) { isFirstRender.current = false; return; }
-    if (!isPreviewLoading) generatePreview(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sceneId]);
-
   async function handlePhoto(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (file) {
@@ -89,44 +94,45 @@ export default function Home() {
     }
   }
 
-  // useCallback ensures fresh state in async calls (no stale closure)
-  const generatePreview = useCallback(async (counts = true) => {
-    if (counts && previewCount >= 3) {
+  // ── Core preview trigger — refs always give latest values ──
+  async function triggerPreview(counts: boolean) {
+    if (counts && previewCountRef.current >= 3) {
       setNotice("Free previews used up (3/3). Use AI Enhance for the final 2K image.");
       return;
     }
     setIsPreviewLoading(true);
     setNotice("Testing your composition...");
     try {
-      // Read latest state via refs to avoid stale closures
-      const currentScene = SCENES.find((item) => item.id === sceneIdRef.current) ?? SCENES[0];
-      const currentGreeting = greeting;
-      const currentName = name;
-      const currentPhoto = photoBase64;
+      const scene = SCENES.find((item) => item.id === sceneIdRef.current) ?? SCENES[0];
       const response = await fetch("/api/preview", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ background: currentScene.legacyName, greeting: currentGreeting, name: currentName, photo: currentPhoto }),
+        body: JSON.stringify({
+          background: scene.legacyName,
+          greeting: greetingRef.current,
+          name: nameRef.current,
+          photo: photoRef.current,
+        }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Could not create preview.");
       setGeneratedImage(data.url);
       if (counts) {
         pushHistory({ id: data.id, url: data.url, kind: "preview" });
-        const nextCount = Math.min(previewCount + 1, 3);
+        const nextCount = Math.min(previewCountRef.current + 1, 3);
         setPreviewCount(nextCount);
         localStorage.setItem("desidesign-preview-count", String(nextCount));
+        setNotice(`Preview ready. Remaining free tries: ${3 - nextCount}/3.`);
+      } else {
+        setNotice("Scene refreshed.");
       }
-      setNotice(counts
-        ? `Preview ready. Remaining free tries: ${3 - Math.min(previewCount + 1, 3)}/3.`
-        : "Scene refreshed.");
       loadHistory();
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "Preview failed.");
     } finally {
       setIsPreviewLoading(false);
     }
-  }, [sceneId, greeting, name, photoBase64, previewCount, loadHistory]);
+  }
 
 
   async function addWatermark(url: string): Promise<string> {
@@ -226,19 +232,19 @@ export default function Home() {
           <div className="studio-heading"><p>PORTRAIT STUDIO</p><span>AI Diwali photo editor for festive avatars</span></div>
           <Control title="PORTRAIT TYPE"><div className="segmented three">{["Solo", "Couple"].map((item) => <button key={item} className={portraitType === item ? "selected" : ""} onClick={() => setPortraitType(item)}>{item}</button>)}<button disabled><span>Family</span><small>SOON</small></button></div></Control>
           <Control title="PHOTO UPLOAD"><label className="upload-box"><Upload size={29} /><span>{photo ? "Photo ready - preview only" : "Drop photo or click to browse"}</span><input type="file" accept="image/*" onChange={handlePhoto} /></label></Control>
-          <div className="field"><label>CHOOSE YOUR FESTIVE STORY</label><div className="scene-list">{SCENES.map((scene) => <button key={scene.id} className={sceneId === scene.id ? "selected" : ""} onClick={() => { sceneIdRef.current = scene.id; setSceneId(scene.id); }}><span className={`scene-swatch ${scene.id}`} aria-hidden="true" /><span className="scene-copy"><strong>{scene.title}</strong><small>{scene.subtitle}</small></span></button>)}</div></div>
+          <div className="field"><label>CHOOSE YOUR FESTIVE STORY</label><div className="scene-list">{SCENES.map((scene) => <button key={scene.id} className={sceneId === scene.id ? "selected" : ""} onClick={() => { setSceneId(scene.id); void triggerPreview(false); }}><span className={`scene-swatch ${scene.id}`} aria-hidden="true" /><span className="scene-copy"><strong>{scene.title}</strong><small>{scene.subtitle}</small></span></button>)}</div></div>
           <div className="field"><label>STYLE</label><div className="segmented two">{["Modern Flat", "Hand-drawn"].map((item) => <button key={item} className={style === item ? "selected" : ""} onClick={() => setStyle(item)}>{item}</button>)}</div></div>
           <div className="field"><label>ATTIRE</label><div className="segmented two">{["Traditional Ethnic", "Elegant Festive"].map((item) => <button key={item} className={attire === item ? "selected" : ""} onClick={() => setAttire(item)}>{item}</button>)}<button disabled><span>Keep Original</span><small>SOON</small></button></div></div>
           <Control title="PERSONALIZE">
-            <div className="form-stack"><label>Greeting<input value={greeting} onChange={(event) => setGreeting(event.target.value)} maxLength={72} /></label><div className="greeting-presets">{GREETING_PRESETS.map((preset, index) => <button key={preset} onClick={() => setGreeting(preset)} title={preset}>{index === 0 ? "Light & love" : index === 1 ? "Wealth & peace" : "New beginning"}</button>)}</div><label>Name<input value={name} onChange={(event) => setName(event.target.value)} maxLength={40} /></label><p className="text-note">Your words are typeset as a crisp overlay, separate from the AI artwork.</p></div>
-            <div className="preview-row"><button className="preview-button" onClick={() => generatePreview(true)} disabled={isPreviewLoading || previewCount >= 3}><Grid2X2 size={16} /> {isPreviewLoading ? "Testing..." : previewCount >= 3 ? "Free previews used (3/3)" : `Generate Free Preview (${3 - previewCount}/3)`}</button>{previewCount >= 3 && <button className="reset-preview-btn" onClick={resetPreviewCount} title="Reset preview count">Reset</button>}</div>
+            <div className="form-stack"><label>Greeting<input value={greeting} onChange={(event) => { setGreeting(event.target.value); if (textDebounceTimer.current) window.clearTimeout(textDebounceTimer.current); textDebounceTimer.current = window.setTimeout(() => triggerPreview(false), 500); }} maxLength={72} /></label><div className="greeting-presets">{GREETING_PRESETS.map((preset, index) => <button key={preset} onClick={() => { setGreeting(preset); void triggerPreview(false); }} title={preset}>{index === 0 ? "Light & love" : index === 1 ? "Wealth & peace" : "New beginning"}</button>)}</div><label>Name<input value={name} onChange={(event) => { setName(event.target.value); if (textDebounceTimer.current) window.clearTimeout(textDebounceTimer.current); textDebounceTimer.current = window.setTimeout(() => triggerPreview(false), 500); }} maxLength={40} /></label><p className="text-note">Your words are typeset as a crisp overlay, separate from the AI artwork.</p></div>
+            <div className="preview-row"><button className="preview-button" onClick={() => triggerPreview(true)} disabled={isPreviewLoading || previewCount >= 3}><Grid2X2 size={16} /> {isPreviewLoading ? "Testing..." : previewCount >= 3 ? "Free previews used (3/3)" : `Generate Free Preview (${3 - previewCount}/3)`}</button>{previewCount >= 3 && <button className="reset-preview-btn" onClick={resetPreviewCount} title="Reset preview count">Reset</button>}</div>
             <button className="generate-button disabled" disabled title="Coming soon"><Sparkles size={15} /> AI Enhance - 2K - Coming soon</button>
             {notice && <p className="status-notice" role="status">{notice}</p>}
           </Control>
         </aside>
         <section className="canvas-area">
           <div className={`portrait-canvas ${sceneId} ${style === "Hand-drawn" ? "drawn" : ""}`} style={!(generatedImage || photo) ? { backgroundImage: "url('/generated/preview-default.png')", backgroundSize: "cover", backgroundPosition: "center" } : undefined}>{(generatedImage || photo) && <img src={(generatedImage ?? photo) as string} alt="Festive portrait preview" />}{!generatedImage && <div className="portrait-copy"><strong>{greeting}</strong><span>{name}</span></div>}<div className="crop-guide" /></div>
-          <div className="toolbar"><button title="Free preview" onClick={() => generatePreview(true)}><RefreshCw size={17} /><span>New Preview</span></button><i /><button title="Change layout"><Grid2X2 size={17} /><span>Layout</span></button><button title="Text size"><Type size={17} /><span>Text Size</span></button><button className="download" onClick={downloadImage} title="Download selected image"><Download size={17} /><span>Download Selected</span></button></div>
+          <div className="toolbar"><button title="Free preview" onClick={() => triggerPreview(true)}><RefreshCw size={17} /><span>New Preview</span></button><i /><button title="Change layout"><Grid2X2 size={17} /><span>Layout</span></button><button title="Text size"><Type size={17} /><span>Text Size</span></button><button className="download" onClick={downloadImage} title="Download selected image"><Download size={17} /><span>Download Selected</span></button></div>
           <div className="history-strip"><div className="history-title"><strong>History</strong><span>{history.length} saved</span></div><div className="history-list">{history.length === 0 ? <span className="history-empty">No saved images yet</span> : history.map((item) => <button key={item.id} className={generatedImage === item.url ? "selected" : ""} onClick={() => setGeneratedImage(item.url)} title={item.kind === "ai" ? "2K AI image" : "512px preview"}><img src={item.url} alt="Saved generation" /><small>{item.kind === "ai" ? "2K AI" : "PREVIEW"}</small></button>)}</div></div>
         </section>
       </div>
