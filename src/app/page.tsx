@@ -69,6 +69,18 @@ export default function Home() {
     setHistory(readHistory());
   }, []);
 
+  // Debounced auto-preview when text changes (does not count against limit)
+  const textChangeTimer = useRef<number | null>(null);
+  useEffect(() => {
+    if (!generatedImage) return; // Only auto-refresh after first manual preview
+    if (textChangeTimer.current) window.clearTimeout(textChangeTimer.current);
+    textChangeTimer.current = window.setTimeout(() => {
+      generatePreview(false);
+    }, 800);
+    return () => { if (textChangeTimer.current) window.clearTimeout(textChangeTimer.current); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [greeting, name]);
+
   async function handlePhoto(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (file) {
