@@ -176,6 +176,24 @@ export default function Home() {
           <div className="history-strip"><div className="history-title"><strong>History</strong><span>{history.length} saved</span></div><div className="history-list">{history.length === 0 ? <span className="history-empty">No saved images yet</span> : history.map((item) => <button key={item.id} className={generatedImage === item.url ? "selected" : ""} onClick={() => setGeneratedImage(item.url)} title={item.kind === "ai" ? "2K AI image" : "512px preview"}><img src={item.url} alt="Saved generation" /><small>{item.kind === "ai" ? "2K AI" : "PREVIEW"}</small></button>)}</div></div>
         </section>
       </div>
+      {/* Waitlist banner — appears below the result */}
+      {generatedImage && (
+        <section style={{ padding: "0 24px 28px", textAlign: "center" }}>
+          <button
+            onClick={() => setShowWaitlist(true)}
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              background: "linear-gradient(135deg, #f97316 0%, #ea580c 100%)",
+              color: "#fff", fontWeight: 700, fontSize: 15,
+              padding: "13px 28px", borderRadius: 12, border: "none",
+              cursor: "pointer", boxShadow: "0 4px 20px rgba(234,88,12,0.3)",
+            }}
+          >
+            ✨ Love this? Get the HD, watermark-free version →
+          </button>
+          <p style={{ marginTop: 8, fontSize: 12, color: "#a8a29e" }}>Drop your email — we&apos;ll unlock it the moment it&apos;s live.</p>
+        </section>
+      )}
       {/* Big CTA banner */}
       <section style={{
         background: "linear-gradient(135deg, #f97316 0%, #f59e0b 100%)",
