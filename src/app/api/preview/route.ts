@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { randomUUID } from "crypto";
+import sharp from "sharp";
 
 function escapeXml(value: unknown): string {
   return String(value ?? "").replace(/[<>&"']/g, (char) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;", "'": "&apos;" }[char] ?? char));
@@ -34,13 +35,15 @@ export async function POST(request: Request) {
       ? `<image href="${escapeXml(body.photo)}" x="128" y="80" width="256" height="256" preserveAspectRatio="xMidYMid slice" clip-path="url(#circle-clip)" opacity="0.85"/><defs><clipPath id="circle-clip"><circle cx="256" cy="208" r="128"/></clipPath></defs>`
       : "";
 
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${bgColor}"/><stop offset="1" stop-color="${bgColorEnd}"/></linearGradient></defs><rect width="512" height="512" fill="url(#bg)"/>${decorations}${photoBlock}<rect x="32" y="32" width="448" height="448" rx="18" fill="none" stroke="#fff" stroke-opacity=".28"/><g text-anchor="middle" fill="#fff" font-family="Arial,sans-serif"><text x="256" y="400" font-size="26" font-weight="700">${greetingLines.map((line, index) => `<tspan x="256" dy="${index === 0 ? 0 : 31}">${line}</tspan>`).join("")}</text><text x="256" y="464" font-size="17">${name}</text></g><text x="256" y="490" text-anchor="middle" fill="#fff" fill-opacity=".32" font-family="Arial" font-size="12">DESIDESIGN PREVIEW</text></svg>`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${bgColor}"/><stop offset="1" stop-color="${bgColorEnd}"/></linearGradient></defs><rect width="512" height="512" fill="url(#bg)"/>${decorations}${photoBlock}<rect x="32" y="32" width="448" height="448" rx="18" fill="none" stroke="#fff" stroke-opacity=".28"/><g text-anchor="middle" fill="#fff" font-family="Arial,sans-serif"><text x="256" y="400" font-size="26" font-weight="700">${greetingLines.map((line, index) => `<tspan x="256" dy="${index === 0 ? 0 : 31}">${line}</tspan>`).join("")}</text><text x="256" y="464" font-size="17">${name}</text></g><text x="500" y="506" text-anchor="end" fill="#fff" fill-opacity=".5" font-family="Arial" font-size="10">desidesign.me</text></svg>`;
 
-    // Return SVG as data URL directly — no file I/O, avoids Vercel serverless fs issues
-    const dataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+    // Convert SVG → PNG and return as a data URL (works on Cloudflare Pages / any host,
+    // no server-side file storage needed for download + history)
+    const pngBuffer = await sharp(Buffer.from(svg)).png().toBuffer();
+    const url = `data:image/png;base64,${pngBuffer.toString("base64")}`;
 
     return NextResponse.json(
-      { id, url: dataUrl, kind: "preview", width: 512, height: 512, hasPhoto: !!body.photo },
+      { id, url, kind: "preview", width: 512, height: 512, hasPhoto: !!body.photo },
       { status: 200 }
     );
   } catch (err) {

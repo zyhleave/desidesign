@@ -15,6 +15,16 @@ const GREETING_PRESETS = [
 
 type HistoryItem = { id: string; url: string; kind: "preview" | "ai"; createdAt?: string };
 
+const HISTORY_KEY = "desidesign-history";
+function readHistory(): HistoryItem[] {
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]"); } catch { return []; }
+}
+function pushHistory(item: HistoryItem) {
+  const items = readHistory().filter((h) => h.id !== item.id);
+  items.unshift(item);
+  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(items.slice(0, 50))); } catch { /* quota */ }
+}
+
 export default function Home() {
   const [portraitType, setPortraitType] = useState("Solo");
   const [sceneId, setSceneId] = useState<SceneId>("fireworks");
@@ -45,9 +55,7 @@ export default function Home() {
   }, [previewCount, generatedImage]);
 
   const loadHistory = useCallback(async () => {
-    const response = await fetch("/api/history", { cache: "no-store" });
-    const data = await response.json();
-    setHistory(data.items || []);
+    setHistory(readHistory());
   }, []);
 
   useEffect(() => {
@@ -82,6 +90,7 @@ export default function Home() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Could not create preview.");
       setGeneratedImage(data.url);
+      pushHistory({ id: data.id, url: data.url, kind: "preview" });
       const nextCount = Math.min(previewCount + 1, 3);
       setPreviewCount(nextCount);
       localStorage.setItem("desidesign-preview-count", String(nextCount));
@@ -108,7 +117,7 @@ export default function Home() {
     }
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = "desidesign-" + Date.now() + ".jpg";
+    anchor.download = "desidesign-" + Date.now() + ".png";
     anchor.click();
     setNotice("Download started!");
   }
