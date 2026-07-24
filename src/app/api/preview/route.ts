@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { randomUUID } from "crypto";
-import sharp from "sharp";
+import { Resvg } from "@resvg/resvg-js";
+import path from "path";
+
+// Embed the font so text renders in ANY environment (Vercel's Linux runtime
+// has no Georgia/serif fonts, which silently dropped all <text> before).
+const FONT_PATH = path.join(process.cwd(), "src/assets/fonts/NotoSerif-Bold.ttf");
 
 function escapeXml(value: unknown): string {
   return String(value ?? "").replace(/[<>&"']/g, (char) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;", "'": "&apos;" }[char] ?? char));
@@ -133,10 +138,13 @@ export async function POST(request: Request) {
       svg = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">${bg}${rangoliTop}${photoBlock}${rangoliBottom}${frame}${text}</svg>`;
     }
 
-    // Convert SVG → PNG and return as a data URL (works on Cloudflare Pages / any host,
-    // no server-side file storage needed for download + history)
-    const pngBuffer = await sharp(Buffer.from(svg)).png().toBuffer();
-    const url = `data:image/png;base64,${pngBuffer.toString("base64")}`;
+    // Force every text node onto the embedded font (Vercel Linux lacks Georgia/Arial),
+    // then render SVG → PNG with resvg using ONLY the bundled font buffer.
+    const normalizedSvg = svg.replace(/font-family="[^"]*"/g, 'font-family="Noto Serif"');
+    const pngBuffer = new Resvg(normalizedSvg, {
+      font: { loadSystemFonts: false, fontFiles: [FONT_PATH], defaultFontFamily: "Noto Serif" },
+    }).render().asPng();
+    const url = `data:image/png;base64,${Buffer.from(pngBuffer).toString("base64")}`;
 
     return NextResponse.json(
       { id, url, kind: "preview", width: 512, height: 512, hasPhoto: !!body.photo },
