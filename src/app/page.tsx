@@ -1,7 +1,8 @@
-"use client";
+﻿"use client";
 
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { CircleUserRound, Cloud, Download, Grid2X2, RefreshCw, Sparkles, Type, Upload } from "lucide-react";
+import AuthButton from "@/components/AuthButton"
 import { SCENES, type SceneId } from "@/lib/scenes";
 
 const GREETING_PRESETS = [
@@ -53,7 +54,7 @@ export default function Home() {
     if (file) { setPhoto(URL.createObjectURL(file)); const reader = new FileReader(); reader.onload = () => setPhotoBase64(reader.result as string); reader.readAsDataURL(file); }
   }
 
-  async function generatePreview() {
+  async function generatePreview(overrides?: { sceneId?: SceneId; greeting?: string; name?: string }) {
     if (previewCount >= 3) {
       setNotice("Free previews used up (3/3). Use AI Enhance for the final 2K image.");
       return;
@@ -61,8 +62,11 @@ export default function Home() {
     setIsPreviewLoading(true);
     setNotice("Testing your composition...");
     try {
-      const scene = SCENES.find((item) => item.id === sceneId) ?? SCENES[0];
-      const response = await fetch("/api/preview", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ background: scene.legacyName, greeting, name, photo: photoBase64 }) });
+      const effectiveSceneId = overrides?.sceneId ?? sceneId;
+      const effectiveGreeting = overrides?.greeting ?? greeting;
+      const effectiveName = overrides?.name ?? name;
+      const scene = SCENES.find((item) => item.id === effectiveSceneId) ?? SCENES[0];
+      const response = await fetch("/api/preview", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ background: scene.legacyName, greeting: effectiveGreeting, name: effectiveName, photo: photoBase64 }) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Could not create preview.");
       setGeneratedImage(data.url);
@@ -127,7 +131,7 @@ export default function Home() {
 
   return (
     <main className="app-shell">
-      <header className="topbar"><div className="topbar-inner"><div className="brand">DesiDesign</div><div className="saved"><Cloud size={16} /> Saved locally</div><div className="top-actions"><button>Saved</button><button className="icon-button" aria-label="Account"><CircleUserRound size={22} /></button></div></div></header>
+      <header className="topbar"><div className="topbar-inner"><div className="brand">DesiDesign</div><div className="saved"><Cloud size={16} /> Saved locally</div><div className="top-actions"><button>Saved</button><button className="icon-button" aria-label="Account"><AuthButton /></button></div></div></header>
       <div className="workspace">
         <aside className="sidebar">
           <div className="studio-heading"><p>PORTRAIT STUDIO</p><span>AI Diwali photo editor for festive avatars</span></div>
@@ -135,37 +139,37 @@ export default function Home() {
           <Control title="PHOTO UPLOAD"><label className="upload-box"><Upload size={29} /><span>{photo ? "Photo ready - preview only" : "Drop photo or click to browse"}</span><input type="file" accept="image/*" onChange={handlePhoto} /></label></Control>
           <Control title="CHOOSE LOOK">
             <div className="field"><label>ATTIRE</label><select value={attire} onChange={(event) => setAttire(event.target.value)}><option>Traditional Ethnic</option><option>Elegant Festive</option><option>Keep Original</option></select></div>
-            <div className="field"><label>CHOOSE YOUR FESTIVE STORY</label><div className="scene-list">{SCENES.map((scene) => <button key={scene.id} className={sceneId === scene.id ? "selected" : ""} onClick={() => { setSceneId(scene.id); if (previewCount < 3) setTimeout(generatePreview, 100); }}><span className={`scene-swatch ${scene.id}`} aria-hidden="true" /><span className="scene-copy"><strong>{scene.title}</strong><small>{scene.subtitle}</small></span></button>)}</div></div>
+            <div className="field"><label>CHOOSE YOUR FESTIVE STORY</label><div className="scene-list">{SCENES.map((scene) => <button key={scene.id} className={sceneId === scene.id ? "selected" : ""} onClick={() => { setSceneId(scene.id); setGeneratedImage(null); if (previewCount < 3) setTimeout(() => generatePreview({ sceneId: scene.id }), 100); }}><span className={`scene-swatch ${scene.id}`} aria-hidden="true" /><span className="scene-copy"><strong>{scene.title}</strong><small>{scene.subtitle}</small></span></button>)}</div></div>
             <div className="field"><label>STYLE</label><div className="segmented">{["Hand-drawn", "Modern Flat"].map((item) => <button key={item} className={style === item ? "selected" : ""} onClick={() => setStyle(item)}>{item}</button>)}</div></div>
           </Control>
           <Control title="PERSONALIZE">
-            <div className="form-stack"><label>Greeting<input value={greeting} onChange={(event) => setGreeting(event.target.value)} maxLength={72} /></label><div className="greeting-presets">{GREETING_PRESETS.map((preset, index) => <button key={preset} onClick={() => { setGreeting(preset); setGeneratedImage(null); if (previewCount < 3) setTimeout(generatePreview, 200); }} title={preset}>{index === 0 ? "Light & love" : index === 1 ? "Wealth & peace" : "New beginning"}</button>)}</div><label>Name<input value={name} onChange={(event) => setName(event.target.value)} maxLength={40} /></label><p className="text-note">Your words are typeset as a crisp overlay, separate from the AI artwork.</p></div>
-            <div className="preview-row"><button className="preview-button" onClick={generatePreview} disabled={isPreviewLoading || previewCount >= 3}><Grid2X2 size={16} /> {isPreviewLoading ? "Testing..." : previewCount >= 3 ? "Free previews used (3/3)" : `Generate Free Preview (${3 - previewCount}/3)`}</button>{previewCount >= 3 && <button className="reset-preview-btn" onClick={resetPreviewCount} title="Reset preview count">Reset</button>}</div>
+            <div className="form-stack"><label>Greeting<input value={greeting} onChange={(event) => setGreeting(event.target.value)} maxLength={72} /></label><div className="greeting-presets">{GREETING_PRESETS.map((preset, index) => <button key={preset} onClick={() => { setGreeting(preset); setGeneratedImage(null); if (previewCount < 3) setTimeout(() => generatePreview({ greeting: preset }), 200); }} title={preset}>{index === 0 ? "Light & love" : index === 1 ? "Wealth & peace" : "New beginning"}</button>)}</div><label>Name<input value={name} onChange={(event) => setName(event.target.value)} maxLength={40} /></label><p className="text-note">Your words are typeset as a crisp overlay, separate from the AI artwork.</p></div>
+            <div className="preview-row"><button className="preview-button" onClick={() => generatePreview()} disabled={isPreviewLoading || previewCount >= 3}><Grid2X2 size={16} /> {isPreviewLoading ? "Testing..." : previewCount >= 3 ? "Free previews used (3/3)" : `Generate Free Preview (${3 - previewCount}/3)`}</button>{previewCount >= 3 && <button className="reset-preview-btn" onClick={resetPreviewCount} title="Reset preview count">Reset</button>}</div>
             <button className="generate-button disabled" disabled title="Coming soon"><Sparkles size={15} /> AI Enhance - 2K - Coming soon</button>
             {notice && <p className="status-notice" role="status">{notice}</p>}
           </Control>
         </aside>
         <section className="canvas-area">
           <div className={`portrait-canvas ${sceneId} ${style === "Hand-drawn" ? "drawn" : ""}`}>{(generatedImage || photo) && <img src={(generatedImage ?? photo) as string} alt="Festive portrait preview" />}{!generatedImage && <div className="portrait-copy"><strong>{greeting}</strong><span>{name}</span></div>}<div className="crop-guide" /></div>
-          <div className="toolbar"><button title="Free preview" onClick={generatePreview}><RefreshCw size={17} /><span>New Preview</span></button><i /><button title="Change layout"><Grid2X2 size={17} /><span>Layout</span></button><button title="Text size"><Type size={17} /><span>Text Size</span></button><button className="download" onClick={downloadImage} title="Download selected image"><Download size={17} /><span>Download Selected</span></button></div>
+          <div className="toolbar"><button title="Free preview" onClick={() => generatePreview()}><RefreshCw size={17} /><span>New Preview</span></button><i /><button title="Change layout"><Grid2X2 size={17} /><span>Layout</span></button><button title="Text size"><Type size={17} /><span>Text Size</span></button><button className="download" onClick={downloadImage} title="Download selected image"><Download size={17} /><span>Download Selected</span></button></div>
           <div className="history-strip"><div className="history-title"><strong>History</strong><span>{history.length} saved</span></div><div className="history-list">{history.length === 0 ? <span className="history-empty">No saved images yet</span> : history.map((item) => <button key={item.id} className={generatedImage === item.url ? "selected" : ""} onClick={() => setGeneratedImage(item.url)} title={item.kind === "ai" ? "2K AI image" : "512px preview"}><img src={item.url} alt="Saved generation" /><small>{item.kind === "ai" ? "2K AI" : "PREVIEW"}</small></button>)}</div></div>
         </section>
       </div>
       <section className="tools-listing" aria-label="More free Diwali design tools">
         <h2>More Free Diwali Design Tools</h2>
-        <p className="tools-sub">Pick a tool to create your festive designs in 1 click — all free, no signup.</p>
+        <p className="tools-sub">Pick a tool to create your festive designs in 1 click 鈥?all free, no signup.</p>
         <div className="tools-grid">
           <a className="tool-card" href="/diwali-card-maker">
             <strong>Diwali Card Maker</strong>
-            <span>Create greeting cards with AI — text-perfect, culturally accurate</span>
+            <span>Create greeting cards with AI 鈥?text-perfect, culturally accurate</span>
           </a>
           <a className="tool-card" href="/diwali-photo-frame-free">
             <strong>Diwali Photo Frame</strong>
-            <span>Add a festive Diwali frame to your photo — free, HD download</span>
+            <span>Add a festive Diwali frame to your photo 鈥?free, HD download</span>
           </a>
           <a className="tool-card" href="/happy-diwali-post-generator">
             <strong>Diwali Post Generator</strong>
-            <span>Make share-ready Diwali posts for Instagram & WhatsApp — free</span>
+            <span>Make share-ready Diwali posts for Instagram & WhatsApp 鈥?free</span>
           </a>
           <a className="tool-card" href="/shubh-diwali-wishes-image">
             <strong>Shubh Diwali Wishes</strong>
@@ -173,7 +177,7 @@ export default function Home() {
           </a>
           <a className="tool-card" href="/diwali-wishes-card-maker">
             <strong>Diwali Wishes Card Maker</strong>
-            <span>Personalized Diwali greeting cards in Hindi & English — free</span>
+            <span>Personalized Diwali greeting cards in Hindi & English 鈥?free</span>
           </a>
         </div>
       </section>
@@ -185,5 +189,9 @@ export default function Home() {
 function Control({ title, active = false, children }: { title: string; active?: boolean; children: React.ReactNode }) {
   return <section className="control"><h2 className={active ? "active" : ""}>{title}</h2><div className="control-body">{children}</div></section>;
 }
+
+
+
+
 
 

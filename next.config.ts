@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // 禁用 Turbopack（不支持中文路径）
+  experimental: {
+    turbo: undefined,
+  },
 };
 
 export default nextConfig;
