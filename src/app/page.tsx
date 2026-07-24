@@ -54,7 +54,8 @@ export default function Home() {
     }
   }, [previewCount, generatedImage]);
 
-  const loadHistory = useCallback(async () => {
+  // Auto-generate preview when user picks a scene — avoid stale closure by watching sceneId as dep
+  const loadHistory = useCallback(() => {
     setHistory(readHistory());
   }, []);
 
@@ -63,22 +64,23 @@ export default function Home() {
     queueMicrotask(() => setPreviewCount(Math.min(Math.max(savedCount, 0), 3)));
   }, []);
 
+  // Load history from localStorage on mount
   useEffect(() => {
-    let active = true;
-    fetch("/api/history", { cache: "no-store" })
-      .then((response) => response.json())
-      .then((data) => { if (active) setHistory(data.items || []); })
-      .catch(() => { if (active) setHistory([]); });
-    return () => { active = false; };
+    setHistory(readHistory());
   }, []);
 
   async function handlePhoto(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
-    if (file) { setPhoto(URL.createObjectURL(file)); const reader = new FileReader(); reader.onload = () => setPhotoBase64(reader.result as string); reader.readAsDataURL(file); }
+    if (file) {
+      setPhoto(URL.createObjectURL(file));
+      const reader = new FileReader();
+      reader.onload = () => setPhotoBase64(reader.result as string);
+      reader.readAsDataURL(file);
+    }
   }
 
-  async function generatePreview() {
-    if (previewCount >= 3) {
+  async function generatePreview(counts = true) {
+    if (counts && previewCount >= 3) {
       setNotice("Free previews used up (3/3). Use AI Enhance for the final 2K image.");
       return;
     }
@@ -86,16 +88,22 @@ export default function Home() {
     setNotice("Testing your composition...");
     try {
       const scene = SCENES.find((item) => item.id === sceneId) ?? SCENES[0];
-      const response = await fetch("/api/preview", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ background: scene.legacyName, greeting, name, photo: photoBase64 }) });
+      const response = await fetch("/api/preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ background: scene.legacyName, greeting, name, photo: photoBase64 }),
+      });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Could not create preview.");
       setGeneratedImage(data.url);
       pushHistory({ id: data.id, url: data.url, kind: "preview" });
-      const nextCount = Math.min(previewCount + 1, 3);
+      const nextCount = counts ? Math.min(previewCount + 1, 3) : previewCount;
       setPreviewCount(nextCount);
-      localStorage.setItem("desidesign-preview-count", String(nextCount));
-      setNotice("Preview ready. Remaining free tries: " + (3 - nextCount) + "/3.");
-      await loadHistory();
+      if (counts) localStorage.setItem("desidesign-preview-count", String(nextCount));
+      setNotice(counts
+        ? "Preview ready. Remaining free tries: " + (3 - nextCount) + "/3."
+        : "Scene refreshed.");
+      loadHistory();
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "Preview failed.");
     } finally {
@@ -104,10 +112,43 @@ export default function Home() {
   }
 
 
+  async function addWatermark(url: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const img = new window.Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) { resolve(url); return; }
+        ctx.drawImage(img, 0, 0);
+        const diagonal = Math.sqrt(img.width ** 2 + img.height ** 2);
+        ctx.save();
+        ctx.translate(img.width / 2, img.height / 2);
+        ctx.rotate(-Math.PI / 4);
+        ctx.globalAlpha = 0.38;
+        ctx.fillStyle = "#ffffff";
+        const fontSize = Math.round(img.width * 0.035);
+        ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.shadowColor = "rgba(0,0,0,0.5)";
+        ctx.shadowBlur = fontSize * 0.4;
+        for (let offset = -diagonal / 2; offset < diagonal / 2; offset += fontSize * 6) {
+          ctx.fillText("DESIDESIGN PREVIEW", offset, 0);
+        }
+        ctx.restore();
+        resolve(canvas.toDataURL("image/png"));
+      };
+      img.onerror = () => resolve(url);
+      img.src = url;
+    });
+  }
+
   async function downloadImage() {
     const url = generatedImage;
     if (!url) { setNotice("No image to download. Generate one first."); return; }
-    // Check auth before download
     const { createClient } = await import("@/lib/supabase/client");
     const supabase = createClient();
     const { data } = await supabase.auth.getUser();
@@ -115,8 +156,9 @@ export default function Home() {
       setShowLoginModal(true);
       return;
     }
+    const wmUrl = await addWatermark(url);
     const anchor = document.createElement("a");
-    anchor.href = url;
+    anchor.href = wmUrl;
     anchor.download = "desidesign-" + Date.now() + ".png";
     anchor.click();
     setNotice("Download started!");
@@ -165,23 +207,21 @@ export default function Home() {
       <div className="workspace">
         <aside className="sidebar">
           <div className="studio-heading"><p>PORTRAIT STUDIO</p><span>AI Diwali photo editor for festive avatars</span></div>
-          <Control title="PORTRAIT TYPE" active><div className="segmented three">{["Solo", "Couple"].map((item) => <button key={item} className={portraitType === item ? "selected" : ""} onClick={() => setPortraitType(item)}>{item}</button>)}<button disabled><span>Family</span><small>SOON</small></button></div></Control>
+          <Control title="PORTRAIT TYPE"><div className="segmented three">{["Solo", "Couple"].map((item) => <button key={item} className={portraitType === item ? "selected" : ""} onClick={() => setPortraitType(item)}>{item}</button>)}<button disabled><span>Family</span><small>SOON</small></button></div></Control>
           <Control title="PHOTO UPLOAD"><label className="upload-box"><Upload size={29} /><span>{photo ? "Photo ready - preview only" : "Drop photo or click to browse"}</span><input type="file" accept="image/*" onChange={handlePhoto} /></label></Control>
-          <Control title="CHOOSE LOOK">
-            <div className="field"><label>ATTIRE</label><select value={attire} onChange={(event) => setAttire(event.target.value)}><option>Traditional Ethnic</option><option>Elegant Festive</option><option>Keep Original</option></select></div>
-            <div className="field"><label>CHOOSE YOUR FESTIVE STORY</label><div className="scene-list">{SCENES.map((scene) => <button key={scene.id} className={sceneId === scene.id ? "selected" : ""} onClick={() => { setSceneId(scene.id); if (previewCount < 3) setTimeout(generatePreview, 100); }}><span className={`scene-swatch ${scene.id}`} aria-hidden="true" /><span className="scene-copy"><strong>{scene.title}</strong><small>{scene.subtitle}</small></span></button>)}</div></div>
-            <div className="field"><label>STYLE</label><div className="segmented">{["Hand-drawn", "Modern Flat"].map((item) => <button key={item} className={style === item ? "selected" : ""} onClick={() => setStyle(item)}>{item}</button>)}</div></div>
-          </Control>
+          <div className="field"><label>CHOOSE YOUR FESTIVE STORY</label><div className="scene-list">{SCENES.map((scene) => <button key={scene.id} className={sceneId === scene.id ? "selected" : ""} onClick={() => { setSceneId(scene.id); generatePreview(false); }}><span className={`scene-swatch ${scene.id}`} aria-hidden="true" /><span className="scene-copy"><strong>{scene.title}</strong><small>{scene.subtitle}</small></span></button>)}</div></div>
+          <div className="field"><label>STYLE</label><div className="segmented two">{["Modern Flat", "Hand-drawn"].map((item) => <button key={item} className={style === item ? "selected" : ""} onClick={() => setStyle(item)}>{item}</button>)}</div></div>
+          <div className="field"><label>ATTIRE</label><div className="segmented two">{["Traditional Ethnic", "Elegant Festive"].map((item) => <button key={item} className={attire === item ? "selected" : ""} onClick={() => setAttire(item)}>{item}</button>)}<button disabled><span>Keep Original</span><small>SOON</small></button></div></div>
           <Control title="PERSONALIZE">
             <div className="form-stack"><label>Greeting<input value={greeting} onChange={(event) => setGreeting(event.target.value)} maxLength={72} /></label><div className="greeting-presets">{GREETING_PRESETS.map((preset, index) => <button key={preset} onClick={() => { setGreeting(preset); setGeneratedImage(null); if (previewCount < 3) setTimeout(generatePreview, 200); }} title={preset}>{index === 0 ? "Light & love" : index === 1 ? "Wealth & peace" : "New beginning"}</button>)}</div><label>Name<input value={name} onChange={(event) => setName(event.target.value)} maxLength={40} /></label><p className="text-note">Your words are typeset as a crisp overlay, separate from the AI artwork.</p></div>
-            <div className="preview-row"><button className="preview-button" onClick={generatePreview} disabled={isPreviewLoading || previewCount >= 3}><Grid2X2 size={16} /> {isPreviewLoading ? "Testing..." : previewCount >= 3 ? "Free previews used (3/3)" : `Generate Free Preview (${3 - previewCount}/3)`}</button>{previewCount >= 3 && <button className="reset-preview-btn" onClick={resetPreviewCount} title="Reset preview count">Reset</button>}</div>
+            <div className="preview-row"><button className="preview-button" onClick={() => generatePreview(true)} disabled={isPreviewLoading || previewCount >= 3}><Grid2X2 size={16} /> {isPreviewLoading ? "Testing..." : previewCount >= 3 ? "Free previews used (3/3)" : `Generate Free Preview (${3 - previewCount}/3)`}</button>{previewCount >= 3 && <button className="reset-preview-btn" onClick={resetPreviewCount} title="Reset preview count">Reset</button>}</div>
             <button className="generate-button disabled" disabled title="Coming soon"><Sparkles size={15} /> AI Enhance - 2K - Coming soon</button>
             {notice && <p className="status-notice" role="status">{notice}</p>}
           </Control>
         </aside>
         <section className="canvas-area">
           <div className={`portrait-canvas ${sceneId} ${style === "Hand-drawn" ? "drawn" : ""}`} style={!(generatedImage || photo) ? { backgroundImage: "url('/generated/preview-default.png')", backgroundSize: "cover", backgroundPosition: "center" } : undefined}>{(generatedImage || photo) && <img src={(generatedImage ?? photo) as string} alt="Festive portrait preview" />}{!generatedImage && <div className="portrait-copy"><strong>{greeting}</strong><span>{name}</span></div>}<div className="crop-guide" /></div>
-          <div className="toolbar"><button title="Free preview" onClick={generatePreview}><RefreshCw size={17} /><span>New Preview</span></button><i /><button title="Change layout"><Grid2X2 size={17} /><span>Layout</span></button><button title="Text size"><Type size={17} /><span>Text Size</span></button><button className="download" onClick={downloadImage} title="Download selected image"><Download size={17} /><span>Download Selected</span></button></div>
+          <div className="toolbar"><button title="Free preview" onClick={() => generatePreview(true)}><RefreshCw size={17} /><span>New Preview</span></button><i /><button title="Change layout"><Grid2X2 size={17} /><span>Layout</span></button><button title="Text size"><Type size={17} /><span>Text Size</span></button><button className="download" onClick={downloadImage} title="Download selected image"><Download size={17} /><span>Download Selected</span></button></div>
           <div className="history-strip"><div className="history-title"><strong>History</strong><span>{history.length} saved</span></div><div className="history-list">{history.length === 0 ? <span className="history-empty">No saved images yet</span> : history.map((item) => <button key={item.id} className={generatedImage === item.url ? "selected" : ""} onClick={() => setGeneratedImage(item.url)} title={item.kind === "ai" ? "2K AI image" : "512px preview"}><img src={item.url} alt="Saved generation" /><small>{item.kind === "ai" ? "2K AI" : "PREVIEW"}</small></button>)}</div></div>
         </section>
       </div>
