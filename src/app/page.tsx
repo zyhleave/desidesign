@@ -69,15 +69,12 @@ export default function Home() {
     setHistory(readHistory());
   }, []);
 
-  // Debounced auto-preview when text changes (does not count against limit)
-  const textChangeTimer = useRef<number | null>(null);
+  // Track if user has manually generated at least once
+  const hasManuallyGenerated = useRef(false);
+  // Instant auto-preview when text changes after first manual generation (no debounce = snappy)
   useEffect(() => {
-    if (!generatedImage) return; // Only auto-refresh after first manual preview
-    if (textChangeTimer.current) window.clearTimeout(textChangeTimer.current);
-    textChangeTimer.current = window.setTimeout(() => {
-      generatePreview(false);
-    }, 800);
-    return () => { if (textChangeTimer.current) window.clearTimeout(textChangeTimer.current); };
+    if (!hasManuallyGenerated.current) return;
+    generatePreview(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [greeting, name]);
 
@@ -108,7 +105,7 @@ export default function Home() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Could not create preview.");
       setGeneratedImage(data.url);
-      pushHistory({ id: data.id, url: data.url, kind: "preview" });
+      if (counts) pushHistory({ id: data.id, url: data.url, kind: "preview" });
       const nextCount = counts ? Math.min(previewCount + 1, 3) : previewCount;
       setPreviewCount(nextCount);
       if (counts) localStorage.setItem("desidesign-preview-count", String(nextCount));
@@ -226,14 +223,14 @@ export default function Home() {
           <div className="field"><label>ATTIRE</label><div className="segmented two">{["Traditional Ethnic", "Elegant Festive"].map((item) => <button key={item} className={attire === item ? "selected" : ""} onClick={() => setAttire(item)}>{item}</button>)}<button disabled><span>Keep Original</span><small>SOON</small></button></div></div>
           <Control title="PERSONALIZE">
             <div className="form-stack"><label>Greeting<input value={greeting} onChange={(event) => setGreeting(event.target.value)} maxLength={72} /></label><div className="greeting-presets">{GREETING_PRESETS.map((preset, index) => <button key={preset} onClick={() => setGreeting(preset)} title={preset}>{index === 0 ? "Light & love" : index === 1 ? "Wealth & peace" : "New beginning"}</button>)}</div><label>Name<input value={name} onChange={(event) => setName(event.target.value)} maxLength={40} /></label><p className="text-note">Your words are typeset as a crisp overlay, separate from the AI artwork.</p></div>
-            <div className="preview-row"><button className="preview-button" onClick={() => generatePreview(true)} disabled={isPreviewLoading || previewCount >= 3}><Grid2X2 size={16} /> {isPreviewLoading ? "Testing..." : previewCount >= 3 ? "Free previews used (3/3)" : `Generate Free Preview (${3 - previewCount}/3)`}</button>{previewCount >= 3 && <button className="reset-preview-btn" onClick={resetPreviewCount} title="Reset preview count">Reset</button>}</div>
+            <div className="preview-row"><button className="preview-button" onClick={() => { hasManuallyGenerated.current = true; void generatePreview(true); }} disabled={isPreviewLoading || previewCount >= 3}><Grid2X2 size={16} /> {isPreviewLoading ? "Testing..." : previewCount >= 3 ? "Free previews used (3/3)" : `Generate Free Preview (${3 - previewCount}/3)`}</button>{previewCount >= 3 && <button className="reset-preview-btn" onClick={resetPreviewCount} title="Reset preview count">Reset</button>}</div>
             <button className="generate-button disabled" disabled title="Coming soon"><Sparkles size={15} /> AI Enhance - 2K - Coming soon</button>
             {notice && <p className="status-notice" role="status">{notice}</p>}
           </Control>
         </aside>
         <section className="canvas-area">
           <div className={`portrait-canvas ${sceneId} ${style === "Hand-drawn" ? "drawn" : ""}`} style={!(generatedImage || photo) ? { backgroundImage: "url('/generated/preview-default.png')", backgroundSize: "cover", backgroundPosition: "center" } : undefined}>{(generatedImage || photo) && <img src={(generatedImage ?? photo) as string} alt="Festive portrait preview" />}{!generatedImage && <div className="portrait-copy"><strong>{greeting}</strong><span>{name}</span></div>}<div className="crop-guide" /></div>
-          <div className="toolbar"><button title="Free preview" onClick={() => generatePreview(true)}><RefreshCw size={17} /><span>New Preview</span></button><i /><button title="Change layout"><Grid2X2 size={17} /><span>Layout</span></button><button title="Text size"><Type size={17} /><span>Text Size</span></button><button className="download" onClick={downloadImage} title="Download selected image"><Download size={17} /><span>Download Selected</span></button></div>
+          <div className="toolbar"><button title="Free preview" onClick={() => { hasManuallyGenerated.current = true; void generatePreview(true); }}><RefreshCw size={17} /><span>New Preview</span></button><i /><button title="Change layout"><Grid2X2 size={17} /><span>Layout</span></button><button title="Text size"><Type size={17} /><span>Text Size</span></button><button className="download" onClick={downloadImage} title="Download selected image"><Download size={17} /><span>Download Selected</span></button></div>
           <div className="history-strip"><div className="history-title"><strong>History</strong><span>{history.length} saved</span></div><div className="history-list">{history.length === 0 ? <span className="history-empty">No saved images yet</span> : history.map((item) => <button key={item.id} className={generatedImage === item.url ? "selected" : ""} onClick={() => setGeneratedImage(item.url)} title={item.kind === "ai" ? "2K AI image" : "512px preview"}><img src={item.url} alt="Saved generation" /><small>{item.kind === "ai" ? "2K AI" : "PREVIEW"}</small></button>)}</div></div>
         </section>
       </div>
