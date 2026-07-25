@@ -55,6 +55,14 @@ export default function WeddingInvitationMaker() {
   venueRef.current = venue;
   greetingRef.current = greeting;
 
+  // Generate a default invitation preview on mount so the canvas is never empty
+  useEffect(() => {
+    // Small delay so the page paints first
+    const timer = setTimeout(() => { void triggerPreview(); }, 600);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Sync document title & meta with selected style (SEO: each style = a long-tail landing)
   const currentStyle = WEDDING_STYLES.find((s) => s.id === styleId) ?? WEDDING_STYLES[0];
   useEffect(() => {
