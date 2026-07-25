@@ -61,14 +61,15 @@ export default function WeddingInvitationMaker() {
     document.title = `${currentStyle.seoTitle} - Free Online Generator | desidesign.me`;
   }, [styleId, currentStyle]);
 
-  // Fire explicit page_view for Wedding page (ensures correct page_title on SPA)
+  // Custom Wedding view event — avoids double-counting GA4's auto page_view
+  // (auto page_view already tracks /wedding-invitation-maker traffic by path)
   useEffect(() => {
     const win = window as unknown as { gtag?: (...args: unknown[]) => void };
     if (typeof win.gtag === "function") {
-      win.gtag("event", "page_view", {
+      win.gtag("event", "wedding_view", {
+        style: currentStyle.id,
         page_title: currentStyle.seoTitle,
         page_path: "/wedding-invitation-maker",
-        page_location: typeof window !== "undefined" ? window.location.href : "",
       });
     }
   }, [currentStyle]);
