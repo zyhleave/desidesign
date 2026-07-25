@@ -117,7 +117,7 @@ export async function POST(request: Request) {
           ${greeting ? `<text x="${W/2}" y="80" font-size="11" fill="#6b6358" letter-spacing="0.1em" text-transform="uppercase">${greeting}</text>` : ""}
           <text x="${W/2}" y="${H/2-60}" font-size="14" fill="#6b6358">The wedding of</text>
           <text x="${W/2}" y="${H/2-20}" font-size="32" font-weight="400" fill="#3a3528">${partner1}</text>
-          <text x="${W/2}" y="${H/2+10}" font-size="20" fill="#7c8a6b" font-style="italic">&</text>
+          <text x="${W/2}" y="${H/2+10}" font-size="20" fill="#7c8a6b" font-style="italic">&amp;</text>
           <text x="${W/2}" y="${H/2+45}" font-size="32" font-weight="400" fill="#3a3528">${partner2}</text>
           <line x1="${W/2-20}" y1="${H/2+70}" x2="${W/2+20}" y2="${H/2+70}" stroke="#7c8a6b" stroke-width="1" stroke-opacity="0.4"/>
           <text x="${W/2}" y="${H/2+100}" font-size="16" fill="#3a3528">${dateText}</text>
@@ -131,7 +131,7 @@ export async function POST(request: Request) {
           ${greeting ? `<text x="${W/2}" y="80" font-size="11" fill="#8a7a4e" letter-spacing="0.1em">${greeting}</text>` : ""}
           <text x="${W/2}" y="${H/2-60}" font-size="14" fill="#8a7a4e">The wedding of</text>
           <text x="${W/2}" y="${H/2-20}" font-size="32" font-weight="400" fill="#4a3c1e">${partner1}</text>
-          <text x="${W/2}" y="${H/2+10}" font-size="20" fill="#c9a24b" font-style="italic">&</text>
+          <text x="${W/2}" y="${H/2+10}" font-size="20" fill="#c9a24b" font-style="italic">&amp;</text>
           <text x="${W/2}" y="${H/2+45}" font-size="32" font-weight="400" fill="#4a3c1e">${partner2}</text>
           <line x1="${W/2-20}" y1="${H/2+70}" x2="${W/2+20}" y2="${H/2+70}" stroke="#c9a24b" stroke-width="1" stroke-opacity="0.4"/>
           <text x="${W/2}" y="${H/2+100}" font-size="16" fill="#4a3c1e">${dateText}</text>
@@ -145,7 +145,7 @@ export async function POST(request: Request) {
           ${greeting ? `<text x="${W/2}" y="80" font-size="11" fill="#888" letter-spacing="0.1em">${greeting}</text>` : ""}
           <text x="${W/2}" y="${H/2-60}" font-size="14" fill="#888">The wedding of</text>
           <text x="${W/2}" y="${H/2-20}" font-size="32" font-weight="300" fill="#1a1a1a">${partner1}</text>
-          <text x="${W/2}" y="${H/2+10}" font-size="20" fill="#666">&</text>
+          <text x="${W/2}" y="${H/2+10}" font-size="20" fill="#666">&amp;</text>
           <text x="${W/2}" y="${H/2+45}" font-size="32" font-weight="300" fill="#1a1a1a">${partner2}</text>
           <line x1="${W/2-20}" y1="${H/2+70}" x2="${W/2+20}" y2="${H/2+70}" stroke="#1a1a1a" stroke-width="1" stroke-opacity="0.3"/>
           <text x="${W/2}" y="${H/2+100}" font-size="16" fill="#1a1a1a">${dateText}</text>
@@ -159,7 +159,7 @@ export async function POST(request: Request) {
           ${greeting ? `<text x="${W/2}" y="100" font-size="11" fill="#8a5070" letter-spacing="0.1em">${greeting}</text>` : ""}
           <text x="${W/2}" y="${H/2-60}" font-size="14" fill="#8a5070">The wedding of</text>
           <text x="${W/2}" y="${H/2-20}" font-size="32" font-weight="400" fill="#5a2840">${partner1}</text>
-          <text x="${W/2}" y="${H/2+10}" font-size="20" fill="#c4728a" font-style="italic">&</text>
+          <text x="${W/2}" y="${H/2+10}" font-size="20" fill="#c4728a" font-style="italic">&amp;</text>
           <text x="${W/2}" y="${H/2+45}" font-size="32" font-weight="400" fill="#5a2840">${partner2}</text>
           <line x1="${W/2-20}" y1="${H/2+70}" x2="${W/2+20}" y2="${H/2+70}" stroke="#c4728a" stroke-width="1" stroke-opacity="0.4"/>
           <text x="${W/2}" y="${H/2+100}" font-size="16" fill="#5a2840">${dateText}</text>
@@ -174,7 +174,7 @@ export async function POST(request: Request) {
           ${greeting ? `<text x="${W/2}" y="80" font-size="11" fill="#7a6a4e" letter-spacing="0.1em">${greeting}</text>` : ""}
           <text x="${W/2}" y="${H/2-60}" font-size="14" fill="#7a6a4e">The wedding of</text>
           <text x="${W/2}" y="${H/2-20}" font-size="28" font-weight="400" fill="#4a3a1e">${partner1}</text>
-          <text x="${W/2}" y="${H/2+10}" font-size="18" fill="#8a6a3a">&</text>
+          <text x="${W/2}" y="${H/2+10}" font-size="18" fill="#8a6a3a">&amp;</text>
           <text x="${W/2}" y="${H/2+45}" font-size="28" font-weight="400" fill="#4a3a1e">${partner2}</text>
           <line x1="${W/2-20}" y1="${H/2+70}" x2="${W/2+20}" y2="${H/2+70}" stroke="#8a6a3a" stroke-width="1" stroke-opacity="0.4"/>
           <text x="${W/2}" y="${H/2+100}" font-size="16" fill="#4a3a1e">${dateText}</text>
