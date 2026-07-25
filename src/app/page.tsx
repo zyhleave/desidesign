@@ -229,7 +229,7 @@ export default function Home() {
 
   return (
     <main className="app-shell">
-      <header className="topbar"><div className="topbar-inner"><div className="brand">DesiDesign</div><div className="saved"><Cloud size={16} /> Saved locally</div><div className="top-actions"><button>Saved</button><AuthButton /></div></div></header>
+      <header className="topbar"><div className="topbar-inner"><a href="/" className="brand">DesiDesign</a><nav style={{ display: "flex", gap: 16 }}><a href="/" style={{ fontWeight: 700, color: "#ea580c", fontSize: 13, borderBottom: "2px solid #ea580c", paddingBottom: 2, textDecoration: "none" }}>Diwali Studio</a><a href="/wedding-invitation-maker" style={{ fontWeight: 600, color: "#78716c", fontSize: 13, textDecoration: "none" }}>Wedding Invitations</a></nav><div className="saved"><Cloud size={16} /> Saved locally</div><div className="top-actions"><button>Saved</button><AuthButton /></div></div></header>
       <div className="workspace">
         <aside className="sidebar">
           <div className="studio-heading"><p>PORTRAIT STUDIO</p><span>AI Diwali photo editor for festive avatars</span></div>
