@@ -55,6 +55,24 @@ export default function WeddingInvitationMaker() {
   venueRef.current = venue;
   greetingRef.current = greeting;
 
+  // Sync document title & meta with selected style (SEO: each style = a long-tail landing)
+  const currentStyle = WEDDING_STYLES.find((s) => s.id === styleId) ?? WEDDING_STYLES[0];
+  useEffect(() => {
+    document.title = `${currentStyle.seoTitle} - Free Online Generator | desidesign.me`;
+  }, [styleId, currentStyle]);
+
+  // Fire explicit page_view for Wedding page (ensures correct page_title on SPA)
+  useEffect(() => {
+    const win = window as unknown as { gtag?: (...args: unknown[]) => void };
+    if (typeof win.gtag === "function") {
+      win.gtag("event", "page_view", {
+        page_title: currentStyle.seoTitle,
+        page_path: "/wedding-invitation-maker",
+        page_location: typeof window !== "undefined" ? window.location.href : "",
+      });
+    }
+  }, [currentStyle]);
+
   // Generate a default invitation preview on mount so the canvas is never empty
   useEffect(() => {
     // Small delay so the page paints first
@@ -62,12 +80,6 @@ export default function WeddingInvitationMaker() {
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Sync document title & meta with selected style (SEO: each style = a long-tail landing)
-  const currentStyle = WEDDING_STYLES.find((s) => s.id === styleId) ?? WEDDING_STYLES[0];
-  useEffect(() => {
-    document.title = `${currentStyle.seoTitle} - Free Online Generator | desidesign.me`;
-  }, [styleId, currentStyle]);
 
   // Load history on mount
   useEffect(() => {
@@ -155,7 +167,13 @@ export default function WeddingInvitationMaker() {
               {WEDDING_STYLES.map((style) => (
                 <button
                   key={style.id}
-                  onClick={() => setStyleId(style.id)}
+                  onClick={() => {
+                    setStyleId(style.id);
+                    const win = window as unknown as { gtag?: (...args: unknown[]) => void };
+                    if (typeof win.gtag === "function") {
+                      win.gtag("event", "style_click", { style: style.id, style_name: style.seoTitle });
+                    }
+                  }}
                   className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all text-left ${
                     styleId === style.id
                       ? "border-orange-500 bg-orange-50"
