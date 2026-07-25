@@ -94,6 +94,105 @@ function rangoliPattern(cx: number, cy: number, R: number): string {
 export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
+    const kind = body.kind || "diwali";
+
+    // Wedding flow
+    if (kind === "wedding") {
+      const styleId = ["boho-sage", "classic-gold", "modern-minimal", "floral-bliss", "rustic-kraft"].includes(body.background) ? body.background : "boho-sage";
+      const partner1 = escapeXml(String(body.partner1 || "Partner 1").slice(0, 30));
+      const partner2 = escapeXml(String(body.partner2 || "Partner 2").slice(0, 30));
+      const dateText = escapeXml(String(body.dateText || "Date").slice(0, 40));
+      const venue = escapeXml(String(body.venue || "Venue").slice(0, 60));
+      const greeting = escapeXml(String(body.greeting || "").slice(0, 72));
+      const id = `wedding-${Date.now()}-${randomUUID().slice(0, 8)}`;
+
+      // Wedding invitation SVG templates (5:7 aspect ratio)
+      const W = 420, H = 588;
+      let svg = "";
+
+      if (styleId === "boho-sage") {
+        const bg = `<defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0" stop-color="#f0ebe2"/><stop offset="0.5" stop-color="#d8cdb8"/><stop offset="1" stop-color="#c4b8a0"/></linearGradient></defs><rect width="${W}" height="${H}" fill="url(#bg)"/>`;
+        const arch = `<path d="M${W*0.2} 20 Q${W*0.5} -40 ${W*0.8} 20" fill="none" stroke="#7c8a6b" stroke-width="3" stroke-opacity="0.3"/>`;
+        const text = `<g text-anchor="middle" font-family="Georgia, serif">
+          ${greeting ? `<text x="${W/2}" y="80" font-size="11" fill="#6b6358" letter-spacing="0.1em" text-transform="uppercase">${greeting}</text>` : ""}
+          <text x="${W/2}" y="${H/2-60}" font-size="14" fill="#6b6358">The wedding of</text>
+          <text x="${W/2}" y="${H/2-20}" font-size="32" font-weight="400" fill="#3a3528">${partner1}</text>
+          <text x="${W/2}" y="${H/2+10}" font-size="20" fill="#7c8a6b" font-style="italic">&</text>
+          <text x="${W/2}" y="${H/2+45}" font-size="32" font-weight="400" fill="#3a3528">${partner2}</text>
+          <line x1="${W/2-20}" y1="${H/2+70}" x2="${W/2+20}" y2="${H/2+70}" stroke="#7c8a6b" stroke-width="1" stroke-opacity="0.4"/>
+          <text x="${W/2}" y="${H/2+100}" font-size="16" fill="#3a3528">${dateText}</text>
+          <text x="${W/2}" y="${H/2+125}" font-size="13" fill="#6b6358">${venue}</text>
+        </g>`;
+        svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">${bg}${arch}${text}<text x="${W-10}" y="${H-10}" text-anchor="end" fill="#6b6358" fill-opacity="0.5" font-size="9" font-family="Arial">desidesign.me</text></svg>`;
+      } else if (styleId === "classic-gold") {
+        const bg = `<defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0" stop-color="#fdf6e3"/><stop offset="0.5" stop-color="#f5ecd3"/><stop offset="1" stop-color="#ede0c0"/></linearGradient></defs><rect width="${W}" height="${H}" fill="url(#bg)"/>`;
+        const borders = `<rect x="16" y="16" width="${W-32}" height="${H-32}" fill="none" stroke="#c9a24b" stroke-width="2" stroke-opacity="0.4"/><rect x="22" y="22" width="${W-44}" height="${H-44}" fill="none" stroke="#c9a24b" stroke-width="1" stroke-opacity="0.25"/>`;
+        const text = `<g text-anchor="middle" font-family="Georgia, serif">
+          ${greeting ? `<text x="${W/2}" y="80" font-size="11" fill="#8a7a4e" letter-spacing="0.1em">${greeting}</text>` : ""}
+          <text x="${W/2}" y="${H/2-60}" font-size="14" fill="#8a7a4e">The wedding of</text>
+          <text x="${W/2}" y="${H/2-20}" font-size="32" font-weight="400" fill="#4a3c1e">${partner1}</text>
+          <text x="${W/2}" y="${H/2+10}" font-size="20" fill="#c9a24b" font-style="italic">&</text>
+          <text x="${W/2}" y="${H/2+45}" font-size="32" font-weight="400" fill="#4a3c1e">${partner2}</text>
+          <line x1="${W/2-20}" y1="${H/2+70}" x2="${W/2+20}" y2="${H/2+70}" stroke="#c9a24b" stroke-width="1" stroke-opacity="0.4"/>
+          <text x="${W/2}" y="${H/2+100}" font-size="16" fill="#4a3c1e">${dateText}</text>
+          <text x="${W/2}" y="${H/2+125}" font-size="13" fill="#8a7a4e">${venue}</text>
+        </g>`;
+        svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">${bg}${borders}${text}<text x="${W-10}" y="${H-10}" text-anchor="end" fill="#c9a24b" fill-opacity="0.55" font-size="9" font-family="Arial">desidesign.me</text></svg>`;
+      } else if (styleId === "modern-minimal") {
+        const bg = `<defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0" stop-color="#ffffff"/><stop offset="0.5" stop-color="#f5f5f5"/><stop offset="1" stop-color="#e8e8e8"/></linearGradient></defs><rect width="${W}" height="${H}" fill="url(#bg)"/>`;
+        const lines = `<line x1="30" y1="30" x2="${W-30}" y2="30" stroke="#1a1a1a" stroke-opacity="0.2"/><line x1="30" y1="${H-30}" x2="${W-30}" y2="${H-30}" stroke="#1a1a1a" stroke-opacity="0.2"/>`;
+        const text = `<g text-anchor="middle" font-family="Arial, Helvetica, sans-serif">
+          ${greeting ? `<text x="${W/2}" y="80" font-size="11" fill="#888" letter-spacing="0.1em">${greeting}</text>` : ""}
+          <text x="${W/2}" y="${H/2-60}" font-size="14" fill="#888">The wedding of</text>
+          <text x="${W/2}" y="${H/2-20}" font-size="32" font-weight="300" fill="#1a1a1a">${partner1}</text>
+          <text x="${W/2}" y="${H/2+10}" font-size="20" fill="#666">&</text>
+          <text x="${W/2}" y="${H/2+45}" font-size="32" font-weight="300" fill="#1a1a1a">${partner2}</text>
+          <line x1="${W/2-20}" y1="${H/2+70}" x2="${W/2+20}" y2="${H/2+70}" stroke="#1a1a1a" stroke-width="1" stroke-opacity="0.3"/>
+          <text x="${W/2}" y="${H/2+100}" font-size="16" fill="#1a1a1a">${dateText}</text>
+          <text x="${W/2}" y="${H/2+125}" font-size="13" fill="#888">${venue}</text>
+        </g>`;
+        svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">${bg}${lines}${text}<text x="${W-10}" y="${H-10}" text-anchor="end" fill="#1a1a1a" fill-opacity="0.4" font-size="9" font-family="Arial">desidesign.me</text></svg>`;
+      } else if (styleId === "floral-bliss") {
+        const bg = `<defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0" stop-color="#fdf0f3"/><stop offset="0.5" stop-color="#f5d8e0"/><stop offset="1" stop-color="#e8b8c8"/></linearGradient></defs><rect width="${W}" height="${H}" fill="url(#bg)"/>`;
+        const florals = `<ellipse cx="${W*0.2}" cy="60" rx="80" ry="50" fill="#e8b4c8" fill-opacity="0.3"/><ellipse cx="${W*0.8}" cy="60" rx="80" ry="50" fill="#e8b4c8" fill-opacity="0.3"/><ellipse cx="${W*0.2}" cy="${H-60}" rx="80" ry="50" fill="#e8b4c8" fill-opacity="0.3"/><ellipse cx="${W*0.8}" cy="${H-60}" rx="80" ry="50" fill="#e8b4c8" fill-opacity="0.3"/>`;
+        const text = `<g text-anchor="middle" font-family="Georgia, serif">
+          ${greeting ? `<text x="${W/2}" y="100" font-size="11" fill="#8a5070" letter-spacing="0.1em">${greeting}</text>` : ""}
+          <text x="${W/2}" y="${H/2-60}" font-size="14" fill="#8a5070">The wedding of</text>
+          <text x="${W/2}" y="${H/2-20}" font-size="32" font-weight="400" fill="#5a2840">${partner1}</text>
+          <text x="${W/2}" y="${H/2+10}" font-size="20" fill="#c4728a" font-style="italic">&</text>
+          <text x="${W/2}" y="${H/2+45}" font-size="32" font-weight="400" fill="#5a2840">${partner2}</text>
+          <line x1="${W/2-20}" y1="${H/2+70}" x2="${W/2+20}" y2="${H/2+70}" stroke="#c4728a" stroke-width="1" stroke-opacity="0.4"/>
+          <text x="${W/2}" y="${H/2+100}" font-size="16" fill="#5a2840">${dateText}</text>
+          <text x="${W/2}" y="${H/2+125}" font-size="13" fill="#8a5070">${venue}</text>
+        </g>`;
+        svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">${bg}${florals}${text}<text x="${W-10}" y="${H-10}" text-anchor="end" fill="#c4728a" fill-opacity="0.5" font-size="9" font-family="Arial">desidesign.me</text></svg>`;
+      } else {
+        // rustic-kraft
+        const bg = `<defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0" stop-color="#e8dcc8"/><stop offset="0.5" stop-color="#d4c4a8"/><stop offset="1" stop-color="#c4a882"/></linearGradient></defs><rect width="${W}" height="${H}" fill="url(#bg)"/>`;
+        const dashBorder = `<rect x="12" y="12" width="${W-24}" height="${H-24}" fill="none" stroke="#8a6a3a" stroke-width="1" stroke-dasharray="4 4" stroke-opacity="0.3"/>`;
+        const text = `<g text-anchor="middle" font-family="Courier New, Courier, monospace">
+          ${greeting ? `<text x="${W/2}" y="80" font-size="11" fill="#7a6a4e" letter-spacing="0.1em">${greeting}</text>` : ""}
+          <text x="${W/2}" y="${H/2-60}" font-size="14" fill="#7a6a4e">The wedding of</text>
+          <text x="${W/2}" y="${H/2-20}" font-size="28" font-weight="400" fill="#4a3a1e">${partner1}</text>
+          <text x="${W/2}" y="${H/2+10}" font-size="18" fill="#8a6a3a">&</text>
+          <text x="${W/2}" y="${H/2+45}" font-size="28" font-weight="400" fill="#4a3a1e">${partner2}</text>
+          <line x1="${W/2-20}" y1="${H/2+70}" x2="${W/2+20}" y2="${H/2+70}" stroke="#8a6a3a" stroke-width="1" stroke-opacity="0.4"/>
+          <text x="${W/2}" y="${H/2+100}" font-size="16" fill="#4a3a1e">${dateText}</text>
+          <text x="${W/2}" y="${H/2+125}" font-size="13" fill="#7a6a4e">${venue}</text>
+        </g>`;
+        svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">${bg}${dashBorder}${text}<text x="${W-10}" y="${H-10}" text-anchor="end" fill="#8a6a3a" fill-opacity="0.5" font-size="9" font-family="Arial">desidesign.me</text></svg>`;
+      }
+
+      const normalizedSvg = svg.replace(/font-family="[^"]*"/g, 'font-family="Noto Serif"');
+      const pngBuffer = new Resvg(normalizedSvg, {
+        font: { loadSystemFonts: false, fontFiles: [FONT_PATH], defaultFontFamily: "Noto Serif" },
+      }).render().asPng();
+      const url = `data:image/png;base64,${Buffer.from(pngBuffer).toString("base64")}`;
+
+      return NextResponse.json({ id, url, kind: "wedding", width: W, height: H }, { status: 200 });
+    }
+
+    // Diwali flow (existing logic)
     const background = ["Fireworks", "Diyas", "Rangoli"].includes(body.background) ? body.background : "Fireworks";
     const greetingValue = String(body.greeting || "Happy Diwali").slice(0, 72);
     const words = greetingValue.split(/\s+/);
