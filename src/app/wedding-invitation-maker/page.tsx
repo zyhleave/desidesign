@@ -55,6 +55,12 @@ export default function WeddingInvitationMaker() {
   venueRef.current = venue;
   greetingRef.current = greeting;
 
+  // Sync document title & meta with selected style (SEO: each style = a long-tail landing)
+  const currentStyle = WEDDING_STYLES.find((s) => s.id === styleId) ?? WEDDING_STYLES[0];
+  useEffect(() => {
+    document.title = `${currentStyle.seoTitle} - Free Online Generator | desidesign.me`;
+  }, [styleId, currentStyle]);
+
   // Load history on mount
   useEffect(() => {
     setHistory(readHistory());
@@ -130,7 +136,8 @@ export default function WeddingInvitationMaker() {
         <aside className="space-y-6">
           <div>
             <p className="text-xs font-bold tracking-widest text-stone-400 mb-1">WEDDING INVITATION MAKER</p>
-            <p className="text-sm text-stone-600">Free online invitation designer — pick a style, personalize, download</p>
+            <h1 className="text-xl font-bold text-stone-900 mb-2">{currentStyle.seoTitle}</h1>
+            <p className="text-sm text-stone-600 leading-relaxed">{currentStyle.longTail}</p>
           </div>
 
           {/* Style picker */}
