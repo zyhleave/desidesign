@@ -81,14 +81,25 @@ export default function Home() {
     setHistory(readHistory());
   }, []);
 
-  // ── GA: generator_view — fire once on page load ──
+  // ── GA: generator_view — fire once on page load (with retry) ──
   useEffect(() => {
-    if (typeof window !== "undefined" && window.gtag) {
-      window.gtag("event", "generator_view", {
-        page_path: "/",
-        page_title: document.title,
-      });
-    }
+    if (typeof window === "undefined") return;
+    
+    const sendEvent = () => {
+      if (window.gtag) {
+        window.gtag("event", "generator_view", {
+          page_path: "/",
+          page_title: document.title,
+        });
+      }
+    };
+    
+    // Try immediately
+    sendEvent();
+    // Retry after 1s and 3s in case GA hasn't loaded yet
+    const t1 = setTimeout(sendEvent, 1000);
+    const t2 = setTimeout(sendEvent, 3000);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
   useEffect(() => {
@@ -139,6 +150,7 @@ export default function Home() {
       setGeneratedImage(data.url);
       if (counts) {
         // ── GA: generate_preview — fire each time user clicks Generate ──
+        // ── GA: generate_preview ──
         if (typeof window !== "undefined" && window.gtag) {
           window.gtag("event", "generate_preview", {
             scene_id: scene.id,
