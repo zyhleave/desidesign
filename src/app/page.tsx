@@ -270,7 +270,22 @@ export default function Home() {
         <aside className="sidebar">
           <div className="studio-heading"><p>PORTRAIT STUDIO</p><span>AI Diwali photo editor for festive avatars</span></div>
           <Control title="PORTRAIT TYPE"><div className="segmented three">{["Solo", "Couple"].map((item) => <button key={item} className={portraitType === item ? "selected" : ""} onClick={() => setPortraitType(item)}>{item}</button>)}<button disabled><span>Family</span><small>SOON</small></button></div></Control>
-          <Control title="PHOTO UPLOAD"><label className="upload-box"><Upload size={29} /><span>{photo ? "Photo ready - preview only" : "Drop photo or click to browse"}</span><input type="file" accept="image/*" onChange={handlePhoto} /></label></Control>
+          <Control title="PHOTO UPLOAD">
+            <label className="upload-box" style={{ flexDirection: "column", gap: 12 }}>
+              {photo ? (
+                <>
+                  <img src={photo} alt="Uploaded photo" style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 8, border: "2px solid #f59e0b" }} />
+                  <span style={{ fontSize: 13, color: "#78716c" }}>Photo ready — click to change</span>
+                </>
+              ) : (
+                <>
+                  <Upload size={29} />
+                  <span>Drop photo or click to browse</span>
+                </>
+              )}
+              <input type="file" accept="image/*" onChange={handlePhoto} style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer" }} />
+            </label>
+          </Control>
           <div className="field"><label>CHOOSE YOUR FESTIVE STORY</label><div className="scene-list">{SCENES.map((scene) => <button key={scene.id} className={sceneId === scene.id ? "selected" : ""} onClick={() => { setSceneId(scene.id); void triggerPreview(false, { sceneId: scene.id }); }}><span className={`scene-swatch ${scene.id}`} aria-hidden="true" /><span className="scene-copy"><strong>{scene.title}</strong><small>{scene.subtitle}</small></span></button>)}</div></div>
           <div className="field"><label>STYLE</label><div className="segmented two">{["Modern Flat", "Hand-drawn"].map((item) => <button key={item} className={style === item ? "selected" : ""} onClick={() => setStyle(item)}>{item}</button>)}</div></div>
           <div className="field"><label>ATTIRE</label><div className="segmented two">{["Traditional Ethnic", "Elegant Festive"].map((item) => <button key={item} className={attire === item ? "selected" : ""} onClick={() => setAttire(item)}>{item}</button>)}<button disabled><span>Keep Original</span><small>SOON</small></button></div></div>
