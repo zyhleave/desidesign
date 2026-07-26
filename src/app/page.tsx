@@ -1,6 +1,13 @@
 "use client";
 
 import { ChangeEvent, useCallback, useEffect, useState, useRef } from "react";
+
+// GA4 global gtag function type
+declare global {
+  interface Window {
+    gtag: (...args: unknown[]) => void;
+  }
+}
 import { CircleUserRound, Cloud, Download, Grid2X2, RefreshCw, Sparkles, Type, Upload } from "lucide-react";
 import AuthButton from "@/components/AuthButton";
 import LoginModal from "@/components/LoginModal";
@@ -74,6 +81,16 @@ export default function Home() {
     setHistory(readHistory());
   }, []);
 
+  // ── GA: generator_view — fire once on page load ──
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("event", "generator_view", {
+        page_path: "/",
+        page_title: document.title,
+      });
+    }
+  }, []);
+
   useEffect(() => {
     const savedCount = Number.parseInt(localStorage.getItem("desidesign-preview-count") || "0", 10);
     queueMicrotask(() => setPreviewCount(Math.min(Math.max(savedCount, 0), 3)));
@@ -121,6 +138,13 @@ export default function Home() {
       if (!response.ok) throw new Error(data.error || "Could not create preview.");
       setGeneratedImage(data.url);
       if (counts) {
+        // ── GA: generate_preview — fire each time user clicks Generate ──
+        if (typeof window !== "undefined" && window.gtag) {
+          window.gtag("event", "generate_preview", {
+            scene_id: scene.id,
+            greeting: greetingValue,
+          });
+        }
         pushHistory({ id: data.id, url: data.url, kind: "preview" });
         const nextCount = Math.min(previewCountRef.current + 1, 3);
         setPreviewCount(nextCount);
