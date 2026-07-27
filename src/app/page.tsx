@@ -306,7 +306,7 @@ export default function Home() {
       {generatedImage && (
         <section style={{ padding: "0 24px 28px", textAlign: "center" }}>
           <button
-            onClick={() => setShowWaitlist(true)}
+            onClick={() => { if (typeof window !== "undefined" && window.gtag) { window.gtag("event", "waitlist_click"); } setShowWaitlist(true); }}
             style={{
               display: "inline-flex", alignItems: "center", gap: 8,
               background: "linear-gradient(135deg, #f97316 0%, #ea580c 100%)",
