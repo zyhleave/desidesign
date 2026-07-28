@@ -8,6 +8,7 @@ const LIVE_SLUGS = [
   "happy-diwali-post-generator",
   "wedding-invitation-maker",
   "wedding-invitation-wording",
+  "haldi-ceremony-invitation",
 ];
 
 /**

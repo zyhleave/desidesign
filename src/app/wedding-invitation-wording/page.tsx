@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import CtaButton from "./cta-button";
 
 export const metadata: Metadata = {
   title: "Wedding Invitation Wording Examples (2026) | Free Ideas",
@@ -191,20 +192,7 @@ export default function WeddingInvitationWording() {
             Choose a style, add your names and date, and download a beautiful
             wedding card in minutes. No signup, no cost — just pick and personalise.
           </p>
-          <a
-            href="/wedding-invitation-maker"
-            className="inline-block px-10 py-4 text-lg font-semibold text-white bg-amber-600 hover:bg-amber-700 rounded-xl shadow-lg transition-colors"
-            onClick={() => {
-              if (typeof window !== "undefined" && window.gtag) {
-                window.gtag("event", "cta_click", {
-                  page: "wedding-wording",
-                  position: "bottom",
-                });
-              }
-            }}
-          >
-            Start Designing — Free
-          </a>
+          <CtaButton href="/wedding-invitation-maker" />
         </div>
       </section>
 

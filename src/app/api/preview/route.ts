@@ -192,6 +192,91 @@ export async function POST(request: Request) {
       return NextResponse.json({ id, url, kind: "wedding", width: W, height: H }, { status: 200 });
     }
 
+    // Haldi flow
+    if (kind === "haldi") {
+      const styleId = ["turmeric-gold", "marigold-bloom", "mandala-haldi"].includes(body.background) ? body.background : "turmeric-gold";
+      const partner1 = escapeXml(String(body.partner1 || "Partner 1").slice(0, 30));
+      const partner2 = escapeXml(String(body.partner2 || "Partner 2").slice(0, 30));
+      const dateText = escapeXml(String(body.dateText || "Date").slice(0, 40));
+      const venue = escapeXml(String(body.venue || "Venue").slice(0, 60));
+      const greeting = escapeXml(String(body.greeting || "Haldi Ceremony").slice(0, 72));
+      const id = `haldi-${Date.now()}-${randomUUID().slice(0, 8)}`;
+
+      const W = 420, H = 588;
+      let svg = "";
+
+      if (styleId === "turmeric-gold") {
+        const bg = `<defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0" stop-color="#fdf6e3"/><stop offset="0.5" stop-color="#f5e6c8"/><stop offset="1" stop-color="#ede0c0"/></linearGradient></defs><rect width="${W}" height="${H}" fill="url(#bg)"/>`;
+        const borders = `<rect x="16" y="16" width="${W - 32}" height="${H - 32}" fill="none" stroke="#d4a017" stroke-width="2" stroke-opacity="0.4"/><rect x="22" y="22" width="${W - 44}" height="${H - 44}" fill="none" stroke="#d4a017" stroke-width="1" stroke-opacity="0.25"/>`;
+        const cornerFlowers = [0, 1, 2, 3].map((i) => {
+          const cx = i % 2 === 0 ? 35 : W - 35;
+          const cy = i < 2 ? 35 : H - 35;
+          let p = "";
+          for (let j = 0; j < 6; j++) { const a = (j / 6) * Math.PI * 2; p += `<circle cx="${(cx + Math.cos(a) * 12).toFixed(1)}" cy="${(cy + Math.sin(a) * 12).toFixed(1)}" r="5" fill="#ff9800" fill-opacity="0.35"/>`; }
+          return p + `<circle cx="${cx}" cy="${cy}" r="4" fill="#d4a017" fill-opacity="0.5"/>`;
+        }).join("");
+        const petals = `<g>${cornerFlowers}</g>`;
+        const text = `<g text-anchor="middle" font-family="Georgia, serif">
+          ${greeting ? `<text x="${W / 2}" y="80" font-size="12" fill="#8a7a4e" letter-spacing="0.1em">${greeting}</text>` : ""}
+          <text x="${W / 2}" y="${H / 2 - 60}" font-size="14" fill="#8a7a4e">The haldi ceremony of</text>
+          <text x="${W / 2}" y="${H / 2 - 20}" font-size="32" font-weight="400" fill="#4a3c1e">${partner1}</text>
+          <text x="${W / 2}" y="${H / 2 + 10}" font-size="20" fill="#d4a017" font-style="italic">&amp;</text>
+          <text x="${W / 2}" y="${H / 2 + 45}" font-size="32" font-weight="400" fill="#4a3c1e">${partner2}</text>
+          <line x1="${W / 2 - 20}" y1="${H / 2 + 70}" x2="${W / 2 + 20}" y2="${H / 2 + 70}" stroke="#d4a017" stroke-width="1" stroke-opacity="0.4"/>
+          <text x="${W / 2}" y="${H / 2 + 100}" font-size="16" fill="#4a3c1e">${dateText}</text>
+          <text x="${W / 2}" y="${H / 2 + 125}" font-size="13" fill="#8a7a4e">${venue}</text>
+        </g>`;
+        svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">${bg}${borders}${petals}${text}<text x="${W - 10}" y="${H - 10}" text-anchor="end" fill="#d4a017" fill-opacity="0.55" font-size="9" font-family="Arial">desidesign.me</text></svg>`;
+      } else if (styleId === "marigold-bloom") {
+        const bg = `<defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0" stop-color="#fff3e0"/><stop offset="0.5" stop-color="#ffe0b2"/><stop offset="1" stop-color="#ffcc80"/></linearGradient></defs><rect width="${W}" height="${H}" fill="url(#bg)"/>`;
+        const flowerRow = (y: number) => {
+          let s = `<g>`;
+          for (let i = 0; i < 7; i++) {
+            const cx = 30 + i * 60;
+            for (let j = 0; j < 6; j++) { const a = (j / 6) * Math.PI * 2; s += `<circle cx="${(cx + Math.cos(a) * 8).toFixed(1)}" cy="${(y + Math.sin(a) * 8).toFixed(1)}" r="4" fill="#ff9800" fill-opacity="0.5"/>`; }
+            s += `<circle cx="${cx}" cy="${y}" r="3.5" fill="#e65100"/>`;
+          }
+          return s + `</g>`;
+        };
+        const flowers = flowerRow(30) + flowerRow(H - 30);
+        const text = `<g text-anchor="middle" font-family="Georgia, serif">
+          ${greeting ? `<text x="${W / 2}" y="90" font-size="12" fill="#bf360c" letter-spacing="0.1em">${greeting}</text>` : ""}
+          <text x="${W / 2}" y="${H / 2 - 60}" font-size="14" fill="#bf360c">The haldi ceremony of</text>
+          <text x="${W / 2}" y="${H / 2 - 20}" font-size="32" font-weight="400" fill="#5d2e0c">${partner1}</text>
+          <text x="${W / 2}" y="${H / 2 + 10}" font-size="20" fill="#ff9800" font-style="italic">&amp;</text>
+          <text x="${W / 2}" y="${H / 2 + 45}" font-size="32" font-weight="400" fill="#5d2e0c">${partner2}</text>
+          <line x1="${W / 2 - 20}" y1="${H / 2 + 70}" x2="${W / 2 + 20}" y2="${H / 2 + 70}" stroke="#ff9800" stroke-width="1" stroke-opacity="0.4"/>
+          <text x="${W / 2}" y="${H / 2 + 100}" font-size="16" fill="#5d2e0c">${dateText}</text>
+          <text x="${W / 2}" y="${H / 2 + 125}" font-size="13" fill="#bf360c">${venue}</text>
+        </g>`;
+        svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">${bg}${flowers}${text}<text x="${W - 10}" y="${H - 10}" text-anchor="end" fill="#bf360c" fill-opacity="0.55" font-size="9" font-family="Arial">desidesign.me</text></svg>`;
+      } else {
+        // mandala-haldi
+        const bg = `<defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0" stop-color="#f9d976"/><stop offset="0.5" stop-color="#e6b800"/><stop offset="1" stop-color="#d4a017"/></linearGradient></defs><rect width="${W}" height="${H}" fill="url(#bg)"/>`;
+        const rings = `<g fill="none" stroke="#fff" stroke-opacity="0.15"><circle cx="${W / 2}" cy="${H / 2 - 10}" r="140" stroke-width="1.5"/><circle cx="${W / 2}" cy="${H / 2 - 10}" r="110" stroke-width="1"/><circle cx="${W / 2}" cy="${H / 2 - 10}" r="80" stroke-width="1"/><circle cx="${W / 2}" cy="${H / 2 - 10}" r="50" stroke-width="0.8"/></g>`;
+        const dots = `<g fill="#fff" fill-opacity="0.2">${Array.from({ length: 24 }, (_, i) => { const a = (i / 24) * Math.PI * 2; return `<circle cx="${(W / 2 + Math.cos(a) * 125).toFixed(1)}" cy="${(H / 2 - 10 + Math.sin(a) * 125).toFixed(1)}" r="3"/>`; }).join("")}</g>`;
+        const text = `<g text-anchor="middle" font-family="Georgia, serif">
+          ${greeting ? `<text x="${W / 2}" y="80" font-size="12" fill="#fff" fill-opacity="0.8" letter-spacing="0.1em">${greeting}</text>` : ""}
+          <text x="${W / 2}" y="${H / 2 - 60}" font-size="14" fill="#fff" fill-opacity="0.8">The haldi ceremony of</text>
+          <text x="${W / 2}" y="${H / 2 - 20}" font-size="32" font-weight="400" fill="#fff">${partner1}</text>
+          <text x="${W / 2}" y="${H / 2 + 10}" font-size="20" fill="#fff" fill-opacity="0.7" font-style="italic">&amp;</text>
+          <text x="${W / 2}" y="${H / 2 + 45}" font-size="32" font-weight="400" fill="#fff">${partner2}</text>
+          <line x1="${W / 2 - 20}" y1="${H / 2 + 70}" x2="${W / 2 + 20}" y2="${H / 2 + 70}" stroke="#fff" stroke-width="1" stroke-opacity="0.4"/>
+          <text x="${W / 2}" y="${H / 2 + 100}" font-size="16" fill="#fff">${dateText}</text>
+          <text x="${W / 2}" y="${H / 2 + 125}" font-size="13" fill="#fff" fill-opacity="0.8">${venue}</text>
+        </g>`;
+        svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">${bg}${rings}${dots}${text}<text x="${W - 10}" y="${H - 10}" text-anchor="end" fill="#fff" fill-opacity="0.4" font-size="9" font-family="Arial">desidesign.me</text></svg>`;
+      }
+
+      const normalizedSvg = svg.replace(/font-family="[^"]*"/g, 'font-family="Noto Serif"');
+      const pngBuffer = new Resvg(normalizedSvg, {
+        font: { loadSystemFonts: false, fontFiles: [FONT_PATH], defaultFontFamily: "Noto Serif" },
+      }).render().asPng();
+      const url = `data:image/png;base64,${Buffer.from(pngBuffer).toString("base64")}`;
+
+      return NextResponse.json({ id, url, kind: "haldi", width: W, height: H }, { status: 200 });
+    }
+
     // Diwali flow (existing logic)
     const background = ["Fireworks", "Diyas", "Rangoli"].includes(body.background) ? body.background : "Fireworks";
     const greetingValue = String(body.greeting || "Happy Diwali").slice(0, 72);
