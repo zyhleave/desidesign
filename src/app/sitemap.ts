@@ -6,6 +6,8 @@ import type { MetadataRoute } from "next";
  */
 const LIVE_SLUGS = [
   "happy-diwali-post-generator",
+  "wedding-invitation-maker",
+  "wedding-invitation-wording",
 ];
 
 /**
