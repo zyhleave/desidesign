@@ -26,6 +26,12 @@ const PLANNED_SLUGS = [
   "diwali-wishes-for-customers",
 ];
 
+/**
+ * 2026-07-28: wedding-invitation-maker 和 wedding-invitation-wording
+ * 页面文件早就存在，但 sitemap.ts 没更新所以 sitemap 从未输出它们。
+ * 本次修复让 sitemap 包含全部 3 个落地页。
+ */
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = "https://desidesign.me";
   const now = new Date();
