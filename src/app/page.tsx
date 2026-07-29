@@ -11,7 +11,7 @@ declare global {
 import { CircleUserRound, Cloud, Download, Grid2X2, RefreshCw, Sparkles, Type, Upload } from "lucide-react";
 import AuthButton from "@/components/AuthButton";
 import LoginModal from "@/components/LoginModal";
-import WaitlistModal from "@/components/WaitlistModal";
+import PaymentModal from "@/components/PaymentModal";
 import { SCENES, type SceneId } from "@/lib/scenes";
 
 const GREETING_PRESETS = [
@@ -43,7 +43,7 @@ export default function Home() {
   const [photoBase64, setPhotoBase64] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showWaitlist, setShowWaitlist] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
   const prevPreviewCount = useRef(0);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
@@ -71,9 +71,9 @@ export default function Home() {
   useEffect(() => {
     const prev = prevPreviewCount.current;
     prevPreviewCount.current = previewCount;
-    if (prev === 0 && previewCount >= 1 && generatedImage && !sessionStorage.getItem("waitlist_shown")) {
-      sessionStorage.setItem("waitlist_shown", "1");
-      setShowWaitlist(true);
+    if (prev === 0 && previewCount >= 1 && generatedImage && !sessionStorage.getItem("payment_shown")) {
+      sessionStorage.setItem("payment_shown", "1");
+      setShowPayment(true);
     }
   }, [previewCount, generatedImage]);
 
@@ -306,7 +306,7 @@ export default function Home() {
       {generatedImage && (
         <section style={{ padding: "0 24px 28px", textAlign: "center" }}>
           <button
-            onClick={() => { if (typeof window !== "undefined" && window.gtag) { window.gtag("event", "waitlist_click"); } setShowWaitlist(true); }}
+            onClick={() => { if (typeof window !== "undefined" && window.gtag) { window.gtag("event", "hd_payment_open"); } setShowPayment(true); }}
             style={{
               display: "inline-flex", alignItems: "center", gap: 8,
               background: "linear-gradient(135deg, #f97316 0%, #ea580c 100%)",
@@ -317,7 +317,7 @@ export default function Home() {
           >
             ✨ Love this? Get the HD, watermark-free version →
           </button>
-          <p style={{ marginTop: 8, fontSize: 12, color: "#a8a29e" }}>Drop your email — we&apos;ll unlock it the moment it&apos;s live.</p>
+          <p style={{ marginTop: 8, fontSize: 12, color: "#a8a29e" }}>One-time payment · Instant download · No watermark</p>
         </section>
       )}
       {/* Big CTA banner */}
@@ -361,7 +361,15 @@ export default function Home() {
         </div>
       </section>
       {showLoginModal && <LoginModal onClose={() => setShowLoginModal(false)} onSuccess={() => setNotice("Logged in! You can now download.")} />}
-      {showWaitlist && <WaitlistModal onClose={() => setShowWaitlist(false)} />}
+      {showPayment && generatedImage && (
+        <PaymentModal
+          styleId={sceneId}
+          styleName={SCENES.find((s) => s.id === sceneId)?.title ?? "Festive Portrait"}
+          previewDataUrl={generatedImage}
+          onClose={() => setShowPayment(false)}
+          onSuccess={() => {}}
+        />
+      )}
       <footer className="editorial-footer"><div><h2>AI Diwali Photo Editor</h2><p>DesiDesign turns portraits into personalized Indian festive greetings with curated fireworks, diya, and Rangoli scenes.</p></div><div><h2>Made for your story</h2><p>Upload a portrait, choose a festive story, and add a greeting and family name as a crisp, editable text layer.</p></div><div><h2>Preview before 2K</h2><p>Explore the composition with a free local preview, then create a polished 2K AI artwork when the design feels right.</p></div></footer>
     </main>
   );
