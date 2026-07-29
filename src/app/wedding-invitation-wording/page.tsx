@@ -3,7 +3,7 @@ import Link from "next/link";
 import CtaButton from "./cta-button";
 
 export const metadata: Metadata = {
-  title: "Wedding Invitation Wording Examples (2026) | Free Ideas",
+  title: "Wedding Invitation Wording Examples (2026)",
   description:
     "50+ wedding invitation wording examples for every style. Formal, casual, Indian, destination & more.",
   openGraph: {
