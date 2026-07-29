@@ -110,8 +110,8 @@ export default function PaymentModal({ styleId, styleName, previewDataUrl, onClo
         setErrorMsg("Payment failed. Please try again or contact support.");
         console.error("[PayPal onError]", err);
       },
-      onClick() {
-        // Create order on click
+      createOrder() {
+        // Create order when user clicks PayPal button
         return fetch("/api/paypal/create-order", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -122,14 +122,10 @@ export default function PaymentModal({ styleId, styleName, previewDataUrl, onClo
             if (data.error) throw new Error(data.error);
             return data.id;
           })
-          .then((orderId) => {
-            // Tell PayPal which order to complete
-            // The SDK handles this internally via the onApprove above
-            return orderId;
-          })
           .catch((err) => {
             setStep("error");
             setErrorMsg(err instanceof Error ? err.message : "Could not initiate payment.");
+            throw err; // Re-throw so PayPal SDK knows it failed
           });
       },
     }).render(container);
