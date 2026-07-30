@@ -138,6 +138,28 @@ export default function HappyDiwaliPostGenerator() {
         </div>
       </section>
 
+      {/* Diwali Background */}
+      <section className="px-4 py-14 max-w-4xl mx-auto">
+        <div className="bg-orange-50 rounded-2xl p-8 border border-orange-100">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            Why Diwali Is the Biggest Festival in India
+          </h2>
+          <div className="text-gray-700 text-sm leading-relaxed space-y-4">
+            <p>
+              Diwali — also called Deepavali — is one of the most celebrated festivals across India and among the global Indian diaspora.
+              Falling on the darkest night of the lunar month of Kartika, it symbolizes the victory of light over darkness and good over evil.
+              The word Deepavali itself means "a row of lamps" in Sanskrit.
+            </p>
+            <p>
+              For Indian businesses and families alike, Diwali marks the start of the new financial year, a time for prayers, new beginnings,
+              and reconnecting with loved ones. It is also one of the biggest shopping seasons in India — and increasingly, one of the biggest
+              social media moments. Creating a beautiful Diwali greeting post to share on Instagram or WhatsApp has become as essential
+              as sending printed cards. DesiDesign helps you create that post in seconds — culturally accurate, visually festive, and free.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Features */}
       <section className="px-4 py-14 max-w-4xl mx-auto">
         <h2 className="text-3xl font-bold text-center text-gray-900 mb-10">
@@ -223,6 +245,45 @@ export default function HappyDiwaliPostGenerator() {
               </summary>
               <p className="px-5 pb-5 text-gray-600 leading-relaxed">{a}</p>
             </details>
+          ))}
+        </div>
+      </section>
+
+      {/* Use Cases */}
+      <section className="px-4 py-14 max-w-4xl mx-auto">
+        <h2 className="text-2xl font-bold text-center text-gray-900 mb-8">
+          Who Uses Our Diwali Post Generator
+        </h2>
+        <div className="grid md:grid-cols-2 gap-5">
+          {[
+            {
+              title: "Indian Small Businesses",
+              desc: "Shop owners, freelancers, and entrepreneurs create Diwali sale posts, promotional banners, and festival greetings for their customers — all free, all in minutes.",
+              emoji: "🏪",
+            },
+            {
+              title: "Families & Friends",
+              desc: "Send a warm Happy Diwali greeting to family WhatsApp groups, Instagram Stories, or Facebook timeline. No design skills needed — just type your wish.",
+              emoji: "👨‍👩‍👧",
+            },
+            {
+              title: "Teachers & Community Leaders",
+              desc: "Create a Diwali classroom display, community newsletter header, or cultural event invitation that respects the festival\'s traditions and meaning.",
+              emoji: "📚",
+            },
+            {
+              title: "Influencers & Content Creators",
+              desc: "Build your festive content calendar fast. Download a polished Diwali post that looks professionally designed, ready to post on any platform.",
+              emoji: "✨",
+            },
+          ].map(({ title, desc, emoji }) => (
+            <div key={title} className="flex gap-3 p-5 bg-white rounded-xl border border-orange-100">
+              <span className="text-2xl flex-shrink-0">{emoji}</span>
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-1">{title}</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
+              </div>
+            </div>
           ))}
         </div>
       </section>
