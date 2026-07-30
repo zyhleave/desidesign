@@ -58,7 +58,7 @@ export default function WeddingInvitationMaker() {
   // Sync document title & meta with selected style (SEO: each style = a long-tail landing)
   const currentStyle = WEDDING_STYLES.find((s) => s.id === styleId) ?? WEDDING_STYLES[0];
   useEffect(() => {
-    document.title = `${currentStyle.seoTitle} - Free Online Generator | desidesign.me`;
+    document.title = `Free Wedding Invitation Maker — Online & Instant | desidesign.me`;
   }, [styleId, currentStyle]);
 
   // Custom Wedding view event — avoids double-counting GA4's auto page_view
@@ -157,8 +157,8 @@ export default function WeddingInvitationMaker() {
         <aside className="space-y-6">
           <div>
             <p className="text-xs font-bold tracking-widest text-stone-400 mb-1">WEDDING INVITATION MAKER</p>
-            <h1 className="text-xl font-bold text-stone-900 mb-2">{currentStyle.seoTitle}</h1>
-            <p className="text-sm text-stone-600 leading-relaxed">{currentStyle.longTail}</p>
+            <h1 className="text-xl font-bold text-stone-900 mb-2">Free Wedding Invitation Maker — Create Your Card Online</h1>
+            <p className="text-sm text-stone-600 leading-relaxed">Free online wedding invitation maker — elegant Indian wedding card designs. Choose a style, add your details, and download instantly.</p>
           </div>
 
           {/* Style picker */}
@@ -324,6 +324,35 @@ export default function WeddingInvitationMaker() {
           )}
         </section>
       </div>
+
+      {/* FAQ visible section */}
+      <section className="max-w-3xl mx-auto px-4 py-12">
+        <h2 className="text-2xl font-bold text-stone-900 mb-6">Frequently Asked Questions</h2>
+        <div className="space-y-4">
+          {[
+            { q: "Is the wedding invitation maker completely free?", a: "Yes, our wedding invitation maker is 100% free to use. You can generate unlimited previews, personalise your card, and download the image — all at no cost." },
+            { q: "Do I need to sign up to create an invitation?", a: "No signup is required. Simply open the page, pick a style, fill in the names and date, and generate your invitation instantly." },
+            { q: "What wedding styles are available?", a: "We offer four wedding card styles: Boho Sage for earthy elegance, Royal Burgundy for traditional grandeur, Floral Blush for soft romantic vibes, and Modern Gold for minimalist luxury." },
+            { q: "Can I use this for Indian or Hindu wedding invitations?", a: "Absolutely. Our invitation maker is designed for Indian weddings — from Hindu ceremonies to Christian weddings to modern fusion celebrations." },
+            { q: "What sizes and formats can I download?", a: "Invitations are generated as high-resolution PNG images, perfect for sharing on WhatsApp, Instagram, or printing as a card." },
+            { q: "Can I add my own custom text to the invitation?", a: "Yes. You can personalise the bride and groom names, wedding date, venue, and add a short greeting message. All fields are editable before you generate." },
+          ].map((item, i) => (
+            <details key={i} className="group border border-stone-200 rounded-lg">
+              <summary className="flex items-center justify-between cursor-pointer px-5 py-4 text-stone-800 font-medium hover:bg-orange-50 transition-colors list-none">
+                {item.q}
+                <span className="ml-4 flex-shrink-0 text-orange-600 group-open:rotate-180 transition-transform">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </span>
+              </summary>
+              <div className="px-5 pb-4 text-sm text-stone-600 leading-relaxed border-t border-stone-100 pt-3">
+                {item.a}
+              </div>
+            </details>
+          ))}
+        </div>
+      </section>
 
       {/* CTA banner */}
       <section className="max-w-4xl mx-auto px-4 py-8">

@@ -268,7 +268,7 @@ export default function Home() {
       <header className="topbar"><div className="topbar-inner"><a href="/" className="brand">DesiDesign</a><nav style={{ display: "flex", gap: 16 }}><a href="/" style={{ fontWeight: 700, color: "#ea580c", fontSize: 13, borderBottom: "2px solid #ea580c", paddingBottom: 2, textDecoration: "none" }}>Diwali Studio</a><a href="/wedding-invitation-maker" style={{ fontWeight: 600, color: "#78716c", fontSize: 13, textDecoration: "none" }}>Wedding Invitation Maker</a></nav><div className="saved"><Cloud size={16} /> Saved locally</div><div className="top-actions"><button>Saved</button><AuthButton /></div></div></header>
       <div className="workspace">
         <aside className="sidebar">
-          <div className="studio-heading"><p>PORTRAIT STUDIO</p><span>AI Diwali photo editor for festive avatars</span></div>
+          <div className="studio-heading"><p className="text-xs font-bold tracking-widest text-orange-600 mb-1">PORTRAIT STUDIO</p><h1 className="text-lg font-bold text-stone-900 leading-snug">Free AI Diwali Portrait Editor — Create Festive Greetings Instantly</h1><span className="text-xs text-stone-500">AI-powered Diwali photo editor for Instagram, WhatsApp & Facebook</span></div>
           <Control title="PORTRAIT TYPE"><div className="segmented three">{["Solo", "Couple"].map((item) => <button key={item} className={portraitType === item ? "selected" : ""} onClick={() => setPortraitType(item)}>{item}</button>)}<button disabled><span>Family</span><small>SOON</small></button></div></Control>
           <Control title="PHOTO UPLOAD">
             <label className="upload-box" style={{ flexDirection: "column", gap: 12 }}>

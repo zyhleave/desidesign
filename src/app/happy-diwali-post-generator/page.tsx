@@ -21,8 +21,50 @@ export const metadata: Metadata = {
   },
 };
 
+const FAQ_ITEMS = [
+  {
+    question: "Is this Diwali post generator really free?",
+    answer: "Yes. Every post is free to create and download at full resolution. There is no paywall, no watermark, and no trial period.",
+  },
+  {
+    question: "Do I need to install an app?",
+    answer: "No. The tool runs entirely in your browser — on iPhone, Android, or desktop. Just open the page and start creating.",
+  },
+  {
+    question: "What sizes are supported?",
+    answer: "Instagram square (1080×1080), WhatsApp Status (1080×1920), and Facebook cover (1200×630). The tool auto-sizes your post for the platform you pick.",
+  },
+  {
+    question: "Can I write my wish in Hindi?",
+    answer: "Yes. The generator supports both English and Hindi greetings. Text is typeset cleanly with proper Devanagari rendering — no broken fonts.",
+  },
+  {
+    question: "Are the designs accurate to the Hindu festival?",
+    answer: "Yes. We design every template based on actual Diwali elements: diyas, rangoli, lotus, and gold accents. Nothing is randomly generated clip art.",
+  },
+  {
+    question: "Can businesses use this for Diwali promotions?",
+    answer: "Absolutely. Many Indian small businesses use DesiDesign to create Diwali sale posts, festival greetings for customers, and social media campaigns — all free.",
+  },
+];
+
 export default function HappyDiwaliPostGenerator() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: FAQ_ITEMS.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  };
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
     <main className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
       {/* Hero */}
       <section className="px-4 py-16 max-w-4xl mx-auto text-center">
@@ -203,5 +245,6 @@ export default function HappyDiwaliPostGenerator() {
         </div>
       </section>
     </main>
+    </>
   );
 }
