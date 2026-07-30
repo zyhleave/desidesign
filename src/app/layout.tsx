@@ -38,7 +38,8 @@ export const metadata: Metadata = {
       "AI Diwali design for Indian small businesses. Culturally accurate, text-perfect.",
     // images: adding a branded OG image is a W30 task
   },
-  alternates: { canonical: "/" },
+  // Remove global canonical - each page sets its own
+  // alternates: { canonical: "/" },
   robots: { index: true, follow: true },
 };
 

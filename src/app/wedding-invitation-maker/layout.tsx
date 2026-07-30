@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: "Wedding Invitation Maker - Free Online Card Generator",
   description:
     "Create stunning wedding invitation cards online free. Choose from elegant, traditional, and modern Indian wedding designs. Instant preview, download in seconds.",
+  alternates: { canonical: "/wedding-invitation-maker" },
   openGraph: {
     title: "Wedding Invitation Maker",
     description:

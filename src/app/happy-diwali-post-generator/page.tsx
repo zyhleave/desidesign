@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: "Free Happy Diwali Post Generator – AI-Powered | DesiDesign",
   description:
     "Create share-ready Happy Diwali posts for Instagram, WhatsApp & Facebook in seconds. Free online tool — no signup. Hindu calendar accurate. Try it now.",
+  alternates: { canonical: "/happy-diwali-post-generator" },
   keywords: [
     "happy diwali post generator",
     "happy diwali post maker",
