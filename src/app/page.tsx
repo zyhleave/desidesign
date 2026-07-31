@@ -358,6 +358,14 @@ export default function Home() {
             <strong>Wedding Invitation Maker</strong>
             <span>Free online wedding invitation maker — 5 designer styles, no signup needed</span>
           </a>
+          <a className="tool-card" href="/wedding-invitation-wording">
+            <strong>Wedding Invitation Wording</strong>
+            <span>Browse 50+ beautiful wedding invitation wording ideas for every Indian ceremony</span>
+          </a>
+          <a className="tool-card" href="/haldi-ceremony-invitation">
+            <strong>Haldi Ceremony Invitation</strong>
+            <span>Free Haldi ceremony invitation cards — download, print & share instantly</span>
+          </a>
         </div>
       </section>
       {showLoginModal && <LoginModal onClose={() => setShowLoginModal(false)} onSuccess={() => setNotice("Logged in! You can now download.")} />}
