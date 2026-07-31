@@ -210,6 +210,12 @@ export default function WeddingInvitationWording() {
               ← Back to Home
             </Link>
             <Link
+              href="/haldi-ceremony-invitation"
+              className="px-5 py-2 rounded-full bg-white border border-gray-200 text-sm font-medium text-gray-700 hover:border-yellow-400 hover:text-yellow-700 transition-colors"
+            >
+              Haldi Invitation Maker
+            </Link>
+            <Link
               href="/happy-diwali-post-generator"
               className="px-5 py-2 rounded-full bg-white border border-gray-200 text-sm font-medium text-gray-700 hover:border-orange-400 hover:text-orange-700 transition-colors"
             >

@@ -354,6 +354,21 @@ export default function WeddingInvitationMaker() {
         </div>
       </section>
 
+      {/* Haldi tool banner */}
+      <section className="max-w-4xl mx-auto px-4 py-8">
+        <div className="p-6 bg-gradient-to-r from-yellow-100 to-amber-100 rounded-2xl text-center border border-yellow-200">
+          <p className="text-amber-900 font-medium mb-3">
+            Also need a Haldi ceremony invitation?
+          </p>
+          <a
+            href="/haldi-ceremony-invitation"
+            className="inline-block px-6 py-3 bg-amber-600 text-white font-bold rounded-xl shadow-md hover:bg-amber-700 transition-colors"
+          >
+            Create Haldi Invitation Free →
+          </a>
+        </div>
+      </section>
+
       {/* CTA banner */}
       <section className="max-w-4xl mx-auto px-4 py-8">
         <div className="p-6 bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl text-center shadow-lg">
