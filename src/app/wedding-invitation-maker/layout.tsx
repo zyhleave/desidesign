@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Wedding Invitation Maker - Free Online Card Generator",
+  title: "Wedding Invitation Maker - Free Online Card Generator | desidesign.me",
   description:
-    "Create stunning wedding invitation cards online free. Choose from elegant, traditional, and modern Indian wedding designs. Instant preview, download in seconds.",
+    "Create beautiful wedding invitation cards online free. Choose from Boho Sage, Classic Gold, Floral Bliss, Modern Minimal & Rustic Kraft designs. Instant download, no signup.",
   alternates: { canonical: "/wedding-invitation-maker" },
   openGraph: {
-    title: "Wedding Invitation Maker",
+    title: "Free Wedding Invitation Maker — Online & Instant",
     description:
-      "Free wedding card maker for Indian weddings — browse styles, preview designs, and download your perfect invitation.",
+      "Free wedding card maker — elegant Indian designs, instant download, no design skills needed.",
   },
 };
 
@@ -26,7 +26,7 @@ const FAQ_ITEMS = [
   {
     question: "What wedding styles are available?",
     answer:
-      "We offer four wedding card styles: Boho Sage for earthy elegance, Royal Burgundy for traditional grandeur, Floral Blush for soft romantic vibes, and Modern Gold for minimalist luxury.",
+      "We offer five wedding card styles: Boho Sage for earthy elegance, Classic Gold for traditional grandeur, Modern Minimal for clean contemporary vibes, Floral Bliss for soft romantic gardens, and Rustic Kraft for countryside celebrations.",
   },
   {
     question: "Can I use this for Indian or Hindu wedding invitations?",
@@ -45,14 +45,17 @@ const FAQ_ITEMS = [
   },
 ];
 
-export default function WeddingMakerLayout({ children }: { children: React.ReactNode }) {
+export default function WeddingLayout({ children }: { children: React.ReactNode }) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: FAQ_ITEMS.map((item) => ({
       "@type": "Question",
       name: item.question,
-      acceptedAnswer: { "@type": "Answer", text: item.answer },
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
     })),
   };
 
