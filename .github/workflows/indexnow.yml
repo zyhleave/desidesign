@@ -1,0 +1,83 @@
+name: IndexNow Ping
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/app/sitemap.ts'
+      - '.github/workflows/indexnow.yml'
+  workflow_dispatch:
+
+jobs:
+  ping-indexnow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Submit URLs to IndexNow
+        env:
+          HOST: desidesign.me
+          KEY: 49dbda2edcfb40699de4a13c7bba1da6
+          KEY_LOCATION: https://desidesign.me/49dbda2edcfb40699de4a13c7bba1da6.txt
+        run: |
+          # Read LIVE_SLUGS from sitemap.ts and build URL list
+          # Each line: "https://desidesign.me/<slug>"
+          URLS=$(node -e "
+            const fs = require('fs');
+            const src = fs.readFileSync('src/app/sitemap.ts', 'utf8');
+            const match = src.match(/LIVE_SLUGS\s*=\s*\[([\s\S]*?)\]/);
+            if (!match) { console.error('❌ LIVE_SLUGS not found'); process.exit(1); }
+            const slugs = match[1]
+              .split(',')
+              .map(s => s.replace(/['\"\s]/g, ''))
+              .filter(Boolean);
+            console.log('https://desidesign.me/' + slugs.join('\nhttps://desidesign.me/'));
+          ")
+
+          echo "📋 URLs to submit:"
+          echo "$URLS"
+          echo
+
+          # Build JSON payload (no jq dependency on runner)
+          URL_LIST_JSON=$(node -e "
+            const urls = process.argv[1].split('\n').filter(Boolean);
+            console.log(JSON.stringify(urls));
+          " "$URLS")
+
+          PAYLOAD=$(node -e "
+            const urls = JSON.parse(process.argv[1]);
+            console.log(JSON.stringify({
+              host: process.env.HOST,
+              key: process.env.KEY,
+              keyLocation: process.env.KEY_LOCATION,
+              urlList: urls
+            }, null, 2));
+          " "$URL_LIST_JSON")
+
+          echo "📤 Payload:"
+          echo "$PAYLOAD"
+          echo
+
+          # Submit to IndexNow
+          HTTP_CODE=$(curl -s -o /tmp/indexnow_resp.txt -w '%{http_code}' \
+            -X POST "https://api.indexnow.org/indexnow" \
+            -H "Content-Type: application/json" \
+            --data-binary "$PAYLOAD")
+
+          echo "↳ HTTP $HTTP_CODE"
+          echo "--- Response body ---"
+          cat /tmp/indexnow_resp.txt
+          echo
+
+          case "$HTTP_CODE" in
+            200) echo "✅ Accepted — submitted to Bing + Yandex + Seznam + Naver" ;;
+            202) echo "✅ Accepted (202) — queued for processing" ;;
+            400) echo "❌ 400 Bad request" ; exit 1 ;;
+            403) echo "❌ 403 Forbidden — key mismatch"; exit 1 ;;
+            422) echo "⚠️  422 Unprocessable — URL host mismatch"; exit 1 ;;
+            429) echo "⚠️  429 Too many requests"; exit 1 ;;
+            *)   echo "⚠️  Unexpected $HTTP_CODE"; exit 1 ;;
+          esac
