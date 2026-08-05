@@ -332,7 +332,7 @@ export default function WeddingInvitationMaker() {
           {[
             { q: "Is the wedding invitation maker completely free?", a: "Yes, our wedding invitation maker is 100% free to use. You can generate unlimited previews, personalise your card, and download the image — all at no cost." },
             { q: "Do I need to sign up to create an invitation?", a: "No signup is required. Simply open the page, pick a style, fill in the names and date, and generate your invitation instantly." },
-            { q: "What wedding styles are available?", a: "We offer four wedding card styles: Boho Sage for earthy elegance, Royal Burgundy for traditional grandeur, Floral Blush for soft romantic vibes, and Modern Gold for minimalist luxury." },
+            { q: "What styles are available?", a: "We offer seven invitation styles: Boho Sage, Classic Gold, Modern Minimal, Floral Bliss, and Rustic Kraft for weddings — plus Birthday Party and Baby Shower styles for other celebrations." },
             { q: "Can I use this for Indian or Hindu wedding invitations?", a: "Absolutely. Our invitation maker is designed for Indian weddings — from Hindu ceremonies to Christian weddings to modern fusion celebrations." },
             { q: "What sizes and formats can I download?", a: "Invitations are generated as high-resolution PNG images, perfect for sharing on WhatsApp, Instagram, or printing as a card." },
             { q: "Can I add my own custom text to the invitation?", a: "Yes. You can personalise the bride and groom names, wedding date, venue, and add a short greeting message. All fields are editable before you generate." },

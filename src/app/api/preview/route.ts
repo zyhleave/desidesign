@@ -70,6 +70,56 @@ function bigFirework(cx: number, cy: number, R: number, petalColor: string, core
   return s + `</g>`;
 }
 
+function balloon(x: number, y: number, s: number, color: string): string {
+  const r = 16 * s;
+  return `<g>` +
+    `<ellipse cx="${x}" cy="${y - r}" rx="${r}" ry="${(r * 1.15).toFixed(1)}" fill="${color}"/>` +
+    `<path d="M${(x - r * 0.35).toFixed(1)} ${(y - r * 0.15).toFixed(1)} L${x} ${y} L${(x + r * 0.35).toFixed(1)} ${(y - r * 0.15).toFixed(1)} Z" fill="${color}"/>` +
+    `<path d="M${x} ${y} Q${(x - 3 * s).toFixed(1)} ${(y + 30 * s).toFixed(1)} ${(x + 4 * s).toFixed(1)} ${(y + 58 * s).toFixed(1)}" fill="none" stroke="#9a9a9a" stroke-width="1"/>` +
+    `<ellipse cx="${(x - r * 0.35).toFixed(1)}" cy="${(y - r * 1.15).toFixed(1)}" rx="${(r * 0.18).toFixed(1)}" ry="${(r * 0.3).toFixed(1)}" fill="#fff" fill-opacity="0.45" transform="rotate(-20 ${(x - r * 0.35).toFixed(1)} ${(y - r * 1.15).toFixed(1)})"/>` +
+    `</g>`;
+}
+
+function cloud(x: number, y: number, s: number): string {
+  return `<g fill="#ffffff" fill-opacity="0.75">` +
+    `<ellipse cx="${x}" cy="${y}" rx="${(26 * s).toFixed(1)}" ry="${(12 * s).toFixed(1)}"/>` +
+    `<ellipse cx="${(x - 18 * s).toFixed(1)}" cy="${(y + 4 * s).toFixed(1)}" rx="${(16 * s).toFixed(1)}" ry="${(9 * s).toFixed(1)}"/>` +
+    `<ellipse cx="${(x + 20 * s).toFixed(1)}" cy="${(y + 3 * s).toFixed(1)}" rx="${(17 * s).toFixed(1)}" ry="${(9 * s).toFixed(1)}"/>` +
+    `<ellipse cx="${(x - 8 * s).toFixed(1)}" cy="${(y - 8 * s).toFixed(1)}" rx="${(15 * s).toFixed(1)}" ry="${(10 * s).toFixed(1)}"/>` +
+    `</g>`;
+}
+
+function starShape(x: number, y: number, r: number, color: string): string {
+  const pts: string[] = [];
+  for (let i = 0; i < 10; i++) {
+    const a = (i * Math.PI) / 5 - Math.PI / 2;
+    const rr = i % 2 === 0 ? r : r * 0.45;
+    pts.push(`${(x + Math.cos(a) * rr).toFixed(1)},${(y + Math.sin(a) * rr).toFixed(1)}`);
+  }
+  return `<polygon points="${pts.join(" ")}" fill="${color}" fill-opacity="0.8"/>`;
+}
+
+function bunting(x: number, y: number, count: number, gap: number, h: number, colors: string[]): string {
+  let s = `<g>`;
+  for (let i = 0; i < count; i++) {
+    const cx = x + i * gap;
+    s += `<path d="M${cx} ${y} L${(cx + gap / 2).toFixed(1)} ${(y + h).toFixed(1)} L${(cx + gap).toFixed(1)} ${y} Z" fill="${colors[i % colors.length]}" stroke="#fff" stroke-width="0.6" stroke-opacity="0.5"/>`;
+  }
+  return s + `</g>`;
+}
+
+function confettiDots(w: number, h: number): string {
+  const colors = ["#ff6b6b", "#4ecdc4", "#ffd93d", "#6c5ce7", "#ff8a5c", "#45b7d1"];
+  let s = `<g>`;
+  for (let i = 0; i < 26; i++) {
+    const x = Math.random() * w;
+    const y = 70 + Math.random() * (h - 160);
+    const r = 1.5 + Math.random() * 3;
+    s += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" fill="${colors[i % colors.length]}" fill-opacity="${(0.25 + Math.random() * 0.4).toFixed(2)}"/>`;
+  }
+  return s + `</g>`;
+}
+
 function rangoliPattern(cx: number, cy: number, R: number): string {
   const colors = ["#e63946", "#f4a261", "#2a9d8f", "#9b5de5", "#f15bb5"];
   let s = `<g>`;
@@ -98,7 +148,7 @@ export async function POST(request: Request) {
 
     // Wedding flow
     if (kind === "wedding") {
-      const styleId = ["boho-sage", "classic-gold", "modern-minimal", "floral-bliss", "rustic-kraft"].includes(body.background) ? body.background : "boho-sage";
+      const styleId = ["boho-sage", "classic-gold", "modern-minimal", "floral-bliss", "rustic-kraft", "birthday-party", "baby-shower"].includes(body.background) ? body.background : "boho-sage";
       const partner1 = escapeXml(String(body.partner1 || "Partner 1").slice(0, 30));
       const partner2 = escapeXml(String(body.partner2 || "Partner 2").slice(0, 30));
       const dateText = escapeXml(String(body.dateText || "Date").slice(0, 40));
@@ -166,6 +216,42 @@ export async function POST(request: Request) {
           <text x="${W/2}" y="${H/2+125}" font-size="13" fill="#8a5070">${venue}</text>
         </g>`;
         svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">${bg}${florals}${text}<text x="${W-10}" y="${H-10}" text-anchor="end" fill="#c4728a" fill-opacity="0.5" font-size="9" font-family="Arial">desidesign.me</text></svg>`;
+      } else if (styleId === "birthday-party") {
+        const bg = `<defs><linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0" stop-color="#fff8e7"/><stop offset="0.55" stop-color="#ffe9c2"/><stop offset="1" stop-color="#ffd98a"/></linearGradient></defs><rect width="${W}" height="${H}" fill="url(#bg)"/>`;
+        const flags = bunting(14, 28, 9, 44, 26, ["#ff6b6b", "#4ecdc4", "#ffd93d", "#6c5ce7", "#ff8a5c"]);
+        const confetti = confettiDots(W, H);
+        const balLeft = balloon(62, 472, 1, "#ff6b6b");
+        const balRight = balloon(358, 462, 1.1, "#4ecdc4");
+        const balMid = balloon(210, 500, 0.8, "#ffd93d");
+        const text = `<g text-anchor="middle" font-family="Georgia, serif">
+          <text x="${W/2}" y="86" font-size="13" fill="#e8590c" letter-spacing="0.28em" font-weight="bold">BIRTHDAY PARTY</text>
+          ${greeting ? `<text x="${W/2}" y="128" font-size="11" fill="#8a6a3a" letter-spacing="0.1em">${greeting}</text>` : ""}
+          <text x="${W/2}" y="222" font-size="18" fill="#e8590c" font-style="italic">You&apos;re Invited!</text>
+          <text x="${W/2}" y="264" font-size="36" font-weight="400" fill="#4a2c0c">${partner1}</text>
+          ${partner2 ? `<text x="${W/2}" y="304" font-size="20" fill="#e8590c" font-style="italic">&amp; ${partner2}</text>` : ""}
+          <line x1="${W/2-20}" y1="348" x2="${W/2+20}" y2="348" stroke="#e8590c" stroke-width="1" stroke-opacity="0.4"/>
+          <text x="${W/2}" y="376" font-size="16" fill="#4a2c0c">${dateText}</text>
+          <text x="${W/2}" y="402" font-size="13" fill="#8a6a3a">${venue}</text>
+        </g>`;
+        svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">${bg}${flags}${confetti}${balLeft}${balRight}${balMid}${text}<text x="${W-10}" y="${H-10}" text-anchor="end" fill="#e8590c" fill-opacity="0.5" font-size="9" font-family="Arial">desidesign.me</text></svg>`;
+      } else if (styleId === "baby-shower") {
+        const bg = `<defs><linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0" stop-color="#fdeff5"/><stop offset="0.5" stop-color="#f9dcec"/><stop offset="1" stop-color="#e8f5ef"/></linearGradient></defs><rect width="${W}" height="${H}" fill="url(#bg)"/>`;
+        const clouds = cloud(64, 58, 1) + cloud(214, 40, 1.2) + cloud(352, 62, 0.9);
+        const stars = starShape(52, 128, 8, "#f7a8c4") + starShape(368, 118, 10, "#8fd0c0") + starShape(204, 96, 6, "#f7c8d8") + starShape(384, 210, 7, "#a8dcc8") + starShape(36, 212, 6, "#f7a8c4") + starShape(120, 150, 5, "#d9b8e8");
+        const balLeft = balloon(78, 500, 0.9, "#f7a8c4");
+        const balRight = balloon(342, 492, 1, "#a8dcc8");
+        const balMid = balloon(210, 518, 0.75, "#fbd5a0");
+        const text = `<g text-anchor="middle" font-family="Georgia, serif">
+          <text x="${W/2}" y="86" font-size="13" fill="#c2648f" letter-spacing="0.28em" font-weight="bold">BABY SHOWER</text>
+          ${greeting ? `<text x="${W/2}" y="128" font-size="11" fill="#9a7a8a" letter-spacing="0.1em">${greeting}</text>` : ""}
+          <text x="${W/2}" y="222" font-size="18" fill="#c2648f" font-style="italic">You&apos;re Invited!</text>
+          <text x="${W/2}" y="264" font-size="36" font-weight="400" fill="#4a2c4a">${partner1}</text>
+          ${partner2 ? `<text x="${W/2}" y="304" font-size="20" fill="#7aa8a0" font-style="italic">&amp; ${partner2}</text>` : ""}
+          <line x1="${W/2-20}" y1="348" x2="${W/2+20}" y2="348" stroke="#c2648f" stroke-width="1" stroke-opacity="0.4"/>
+          <text x="${W/2}" y="376" font-size="16" fill="#4a2c4a">${dateText}</text>
+          <text x="${W/2}" y="402" font-size="13" fill="#9a7a8a">${venue}</text>
+        </g>`;
+        svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">${bg}${clouds}${stars}${balLeft}${balRight}${balMid}${text}<text x="${W-10}" y="${H-10}" text-anchor="end" fill="#c2648f" fill-opacity="0.5" font-size="9" font-family="Arial">desidesign.me</text></svg>`;
       } else {
         // rustic-kraft
         const bg = `<defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0" stop-color="#e8dcc8"/><stop offset="0.5" stop-color="#d4c4a8"/><stop offset="1" stop-color="#c4a882"/></linearGradient></defs><rect width="${W}" height="${H}" fill="url(#bg)"/>`;

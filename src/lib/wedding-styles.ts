@@ -1,4 +1,4 @@
-export type WeddingStyleId = "boho-sage" | "classic-gold" | "modern-minimal" | "floral-bliss" | "rustic-kraft";
+export type WeddingStyleId = "boho-sage" | "classic-gold" | "modern-minimal" | "floral-bliss" | "rustic-kraft" | "birthday-party" | "baby-shower";
 
 export interface WeddingStyle {
   id: WeddingStyleId;
@@ -49,5 +49,21 @@ export const WEDDING_STYLES: WeddingStyle[] = [
     gradient: "linear-gradient(135deg, #c4a882 0%, #d4c4a8 100%)",
     seoTitle: "Rustic Wedding Invitation Maker",
     longTail: "Free rustic wedding invitation maker — kraft paper texture, hand-lettered warmth, and twine details for your countryside celebration.",
+  },
+  {
+    id: "birthday-party",
+    name: "Birthday Party",
+    description: "Confetti, bunting, festive yellow-orange",
+    gradient: "linear-gradient(135deg, #ffb347 0%, #ffd97a 100%)",
+    seoTitle: "Birthday Party Invitation Maker",
+    longTail: "Free birthday party invitation maker — confetti, bunting, and festive yellow-orange fun for your celebration.",
+  },
+  {
+    id: "baby-shower",
+    name: "Baby Shower",
+    description: "Soft pastels, clouds, stars, sweet pink-mint",
+    gradient: "linear-gradient(135deg, #f2b8d0 0%, #b8e0d2 100%)",
+    seoTitle: "Baby Shower Invitation Maker",
+    longTail: "Free baby shower invitation maker — soft pastels, clouds, stars, and sweet pink-mint charm for your baby shower.",
   },
 ];
