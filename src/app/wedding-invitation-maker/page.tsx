@@ -152,9 +152,43 @@ export default function WeddingInvitationMaker() {
         </div>
       </header>
 
+      {/* Page Hero Banner */}
+      <div className="max-w-7xl mx-auto px-4 pt-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
+          <div className="flex items-center gap-2 px-4 py-2.5 bg-orange-50 border border-orange-100 rounded-lg">
+            <span className="text-base">🚀</span>
+            <span className="text-xs font-medium text-stone-700">No signup required — start in 3 steps</span>
+          </div>
+          <div className="flex items-center gap-2 px-4 py-2.5 bg-orange-50 border border-orange-100 rounded-lg">
+            <span className="text-base">🛡️</span>
+            <span className="text-xs font-medium text-stone-700">No ads, no coins, no subscriptions — one time $2.99</span>
+          </div>
+          <div className="flex items-center gap-2 px-4 py-2.5 bg-orange-50 border border-orange-100 rounded-lg">
+            <span className="text-base">💻</span>
+            <span className="text-xs font-medium text-stone-700">Works in your browser — no app to download</span>
+          </div>
+        </div>
+      </div>
+
       <div className="max-w-7xl mx-auto px-4 py-8 lg:grid lg:grid-cols-[340px_1fr] lg:gap-8">
         {/* Sidebar */}
         <aside className="space-y-6">
+          {/* Feature bar above style picker */}
+          <div className="rounded-xl border border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50 p-4 space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="text-sm">🚀</span>
+              <span className="text-xs font-medium text-stone-700">No signup required — start in 3 steps</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm">🛡️</span>
+              <span className="text-xs font-medium text-stone-700">No ads, no coins, no subscriptions — one time $2.99</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm">💻</span>
+              <span className="text-xs font-medium text-stone-700">Works in your browser — no app to download</span>
+            </div>
+          </div>
+
           <div>
             <p className="text-xs font-bold tracking-widest text-stone-400 mb-1">WEDDING INVITATION MAKER</p>
             <h1 className="text-xl font-bold text-stone-900 mb-2">Free Wedding Invitation Maker — Create Your Card Online</h1>
