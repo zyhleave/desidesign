@@ -2,10 +2,21 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Download, RefreshCw } from "lucide-react";
+import PaymentModal from "@/components/PaymentModal";
 import AuthButton from "@/components/AuthButton";
 import LoginModal from "@/components/LoginModal";
 import WaitlistModal from "@/components/WaitlistModal";
 import { WEDDING_STYLES, type WeddingStyleId } from "@/lib/wedding-styles";
+
+async function urlToDataUrl(url: string): Promise<string> {
+  const res = await fetch(url);
+  const blob = await res.blob();
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.readAsDataURL(blob);
+  });
+}
 
 type HistoryItem = { id: string; url: string; createdAt?: string };
 const HISTORY_KEY = "haldi-card-history";
@@ -37,6 +48,8 @@ export default function HaldiInvitationCard() {
   const [isLoading, setIsLoading] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showWaitlist, setShowWaitlist] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
+  const [previewDataUrl, setPreviewDataUrl] = useState<string>("");
   const [history, setHistory] = useState<HistoryItem[]>([]);
 
   // Refs to avoid stale closures
@@ -118,6 +131,13 @@ export default function HaldiInvitationCard() {
     link.href = generatedImage;
     link.download = `haldi-invitation-card-${styleId}.png`;
     link.click();
+  }
+
+  async function openPayment() {
+    if (!generatedImage) return;
+    const du = await urlToDataUrl(generatedImage);
+    setPreviewDataUrl(du);
+    setShowPayment(true);
   }
 
   return (
@@ -334,6 +354,12 @@ export default function HaldiInvitationCard() {
                   <Download className="w-4 h-4" />
                   Download
                 </button>
+                <button
+                  onClick={openPayment}
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-600 to-amber-600 text-white rounded-lg text-sm font-bold hover:from-orange-700 hover:to-amber-700 transition-colors shadow-md"
+                >
+                  ✨ Buy HD — $2.99
+                </button>
               </div>
             </>
           ) : (
@@ -379,6 +405,15 @@ export default function HaldiInvitationCard() {
       {/* Modals */}
       {showLoginModal && <LoginModal onClose={() => setShowLoginModal(false)} />}
       {showWaitlist && <WaitlistModal onClose={() => setShowWaitlist(false)} />}
+      {showPayment && (
+        <PaymentModal
+          styleId={styleId}
+          styleName={WEDDING_STYLES.find((s) => s.id === styleId)?.name ?? "Wedding Style"}
+          previewDataUrl={previewDataUrl}
+          onClose={() => setShowPayment(false)}
+          onSuccess={() => setShowPayment(false)}
+        />
+      )}
     </main>
   );
 }
