@@ -9,6 +9,7 @@ const LIVE_SLUGS = [
   "wedding-invitation-maker",
   "wedding-invitation-wording",
   "haldi-ceremony-invitation",
+  "haldi-invitation-card",
 ];
 
 /**
