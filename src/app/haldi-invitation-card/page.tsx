@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Link from "next/link";
 import { Download, RefreshCw } from "lucide-react";
 import PaymentModal from "@/components/PaymentModal";
 import AuthButton from "@/components/AuthButton";
@@ -50,7 +51,7 @@ export default function HaldiInvitationCard() {
   const [showWaitlist, setShowWaitlist] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [previewDataUrl, setPreviewDataUrl] = useState<string>("");
-  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [history, setHistory] = useState<HistoryItem[]>(() => readHistory());
 
   // Refs to avoid stale closures
   const styleIdRef = useRef(styleId);
@@ -77,12 +78,7 @@ export default function HaldiInvitationCard() {
   useEffect(() => {
     const timer = setTimeout(() => { void triggerPreview(); }, 600);
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Load history on mount
-  useEffect(() => {
-    setHistory(readHistory());
+     
   }, []);
 
   // Show waitlist after first successful generation
@@ -145,19 +141,19 @@ export default function HaldiInvitationCard() {
       {/* Topbar */}
       <header className="sticky top-0 z-50 bg-white border-b border-amber-200">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
-          <a href="/" className="text-xl font-bold text-stone-900">
+          <Link href="/" className="text-xl font-bold text-stone-900">
             Desi<span className="text-orange-600">Design</span>
-          </a>
+          </Link>
           <div className="flex items-center gap-4">
-            <a href="/wedding-invitation-maker" className="text-sm font-semibold text-orange-600 hover:text-orange-700 transition-colors">
+            <Link href="/wedding-invitation-maker" className="text-sm font-semibold text-orange-600 hover:text-orange-700 transition-colors">
               Wedding Studio
-            </a>
-            <a href="/haldi-ceremony-invitation" className="text-sm font-semibold text-amber-600 hover:text-amber-700 transition-colors">
+            </Link>
+            <Link href="/haldi-ceremony-invitation" className="text-sm font-semibold text-amber-600 hover:text-amber-700 transition-colors">
               Haldi Studio
-            </a>
-            <a href="/" className="text-sm font-semibold text-orange-600 hover:text-orange-700 transition-colors">
+            </Link>
+            <Link href="/" className="text-sm font-semibold text-orange-600 hover:text-orange-700 transition-colors">
               Diwali Studio
-            </a>
+            </Link>
             <AuthButton />
           </div>
         </div>
@@ -393,12 +389,12 @@ export default function HaldiInvitationCard() {
           <p className="text-white font-medium mb-3">
             Also need Diwali marketing posters for your business?
           </p>
-          <a
+          <Link
             href="/"
             className="inline-block px-6 py-3 bg-white text-orange-700 font-bold rounded-xl shadow-md hover:bg-orange-50 transition-colors"
           >
             Create Diwali Posts Free →
-          </a>
+          </Link>
         </div>
       </section>
 
