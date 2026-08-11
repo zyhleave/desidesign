@@ -175,19 +175,20 @@ export async function POST(request: Request) {
         </g>`;
         svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">${bg}${arch}${text}<text x="${W-10}" y="${H-10}" text-anchor="end" fill="#6b6358" fill-opacity="0.5" font-size="9" font-family="Arial">desidesign.me</text></svg>`;
       } else if (styleId === "classic-gold") {
-        const bg = `<defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0" stop-color="#fdf6e3"/><stop offset="0.5" stop-color="#f5ecd3"/><stop offset="1" stop-color="#ede0c0"/></linearGradient></defs><rect width="${W}" height="${H}" fill="url(#bg)"/>`;
-        const borders = `<rect x="16" y="16" width="${W-32}" height="${H-32}" fill="none" stroke="#c9a24b" stroke-width="2" stroke-opacity="0.4"/><rect x="22" y="22" width="${W-44}" height="${H-44}" fill="none" stroke="#c9a24b" stroke-width="1" stroke-opacity="0.25"/>`;
+        // Haldi Golden Theme: #E69C3B (金菊) / #861710 (深红) / #FAF0DB (暖米白)
+        const bg = `<defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0" stop-color="#FAF0DB"/><stop offset="0.5" stop-color="#F5E8C8"/><stop offset="1" stop-color="#E8D4A8"/></linearGradient></defs><rect width="${W}" height="${H}" fill="url(#bg)"/>`;
+        const borders = `<rect x="16" y="16" width="${W-32}" height="${H-32}" fill="none" stroke="#861710" stroke-width="3" stroke-opacity="0.6"/><rect x="24" y="24" width="${W-48}" height="${H-48}" fill="none" stroke="#E69C3B" stroke-width="1.5" stroke-opacity="0.5"/>`;
         const text = `<g text-anchor="middle" font-family="Georgia, serif">
-          ${greeting ? `<text x="${W/2}" y="80" font-size="11" fill="#8a7a4e" letter-spacing="0.1em">${greeting}</text>` : ""}
-          <text x="${W/2}" y="${H/2-60}" font-size="14" fill="#8a7a4e">The wedding of</text>
-          <text x="${W/2}" y="${H/2-20}" font-size="32" font-weight="400" fill="#4a3c1e">${partner1}</text>
-          <text x="${W/2}" y="${H/2+10}" font-size="20" fill="#c9a24b" font-style="italic">&amp;</text>
-          <text x="${W/2}" y="${H/2+45}" font-size="32" font-weight="400" fill="#4a3c1e">${partner2}</text>
-          <line x1="${W/2-20}" y1="${H/2+70}" x2="${W/2+20}" y2="${H/2+70}" stroke="#c9a24b" stroke-width="1" stroke-opacity="0.4"/>
-          <text x="${W/2}" y="${H/2+100}" font-size="16" fill="#4a3c1e">${dateText}</text>
-          <text x="${W/2}" y="${H/2+125}" font-size="13" fill="#8a7a4e">${venue}</text>
+          ${greeting ? `<text x="${W/2}" y="80" font-size="11" fill="#861710" letter-spacing="0.15em" font-weight="600">${greeting}</text>` : ""}
+          <text x="${W/2}" y="${H/2-60}" font-size="14" fill="#861710">The wedding of</text>
+          <text x="${W/2}" y="${H/2-20}" font-size="34" font-weight="600" fill="#861710">${partner1}</text>
+          <text x="${W/2}" y="${H/2+10}" font-size="22" fill="#E69C3B" font-style="italic">&amp;</text>
+          <text x="${W/2}" y="${H/2+45}" font-size="34" font-weight="600" fill="#861710">${partner2}</text>
+          <line x1="${W/2-30}" y1="${H/2+70}" x2="${W/2+30}" y2="${H/2+70}" stroke="#E69C3B" stroke-width="2" stroke-opacity="0.6"/>
+          <text x="${W/2}" y="${H/2+105}" font-size="17" fill="#861710" font-weight="500">${dateText}</text>
+          <text x="${W/2}" y="${H/2+132}" font-size="13" fill="#861710" fill-opacity="0.8">${venue}</text>
         </g>`;
-        svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">${bg}${borders}${text}<text x="${W-10}" y="${H-10}" text-anchor="end" fill="#c9a24b" fill-opacity="0.55" font-size="9" font-family="Arial">desidesign.me</text></svg>`;
+        svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">${bg}${borders}${text}<text x="${W-10}" y="${H-10}" text-anchor="end" fill="#861710" fill-opacity="0.4" font-size="9" font-family="Arial">desidesign.me</text></svg>`;
       } else if (styleId === "modern-minimal") {
         const bg = `<defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0" stop-color="#ffffff"/><stop offset="0.5" stop-color="#f5f5f5"/><stop offset="1" stop-color="#e8e8e8"/></linearGradient></defs><rect width="${W}" height="${H}" fill="url(#bg)"/>`;
         const lines = `<line x1="30" y1="30" x2="${W-30}" y2="30" stroke="#1a1a1a" stroke-opacity="0.2"/><line x1="30" y1="${H-30}" x2="${W-30}" y2="${H-30}" stroke="#1a1a1a" stroke-opacity="0.2"/>`;
