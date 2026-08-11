@@ -303,6 +303,9 @@ export default function HaldiInvitationCard() {
               )}
               Generate Free Preview
             </button>
+            <p className="text-xs text-stone-500 text-center px-2 leading-relaxed">
+              Generate your free preview, then upgrade to HD print-ready for $2.99.
+            </p>
             <button
               disabled
               className="w-full px-4 py-3 border-2 border-dashed border-stone-300 text-stone-400 font-medium rounded-lg cursor-not-allowed"
