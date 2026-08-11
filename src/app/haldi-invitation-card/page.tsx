@@ -137,21 +137,21 @@ export default function HaldiInvitationCard() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50">
+    <main className="min-h-screen bg-[#FAF0DB]">
       {/* Topbar */}
-      <header className="sticky top-0 z-50 bg-white border-b border-amber-200">
+      <header className="sticky top-0 z-50 bg-white border-b border-[#861710]">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link href="/" className="text-xl font-bold text-stone-900">
-            Desi<span className="text-orange-600">Design</span>
+            Desi<span className="text-[#E69C3B]">Design</span>
           </Link>
           <div className="flex items-center gap-4">
-            <Link href="/wedding-invitation-maker" className="text-sm font-semibold text-orange-600 hover:text-orange-700 transition-colors">
+            <Link href="/wedding-invitation-maker" className="text-sm font-semibold text-[#E69C3B] hover:text-[#EA812E] transition-colors">
               Wedding Studio
             </Link>
-            <Link href="/haldi-ceremony-invitation" className="text-sm font-semibold text-amber-600 hover:text-amber-700 transition-colors">
+            <Link href="/haldi-ceremony-invitation" className="text-sm font-semibold text-[#E69C3B] hover:text-[#EA812E] transition-colors">
               Haldi Studio
             </Link>
-            <Link href="/" className="text-sm font-semibold text-orange-600 hover:text-orange-700 transition-colors">
+            <Link href="/" className="text-sm font-semibold text-[#E69C3B] hover:text-[#EA812E] transition-colors">
               Diwali Studio
             </Link>
             <AuthButton />
@@ -162,17 +162,17 @@ export default function HaldiInvitationCard() {
       {/* Page Hero Banner */}
       <div className="max-w-7xl mx-auto px-4 pt-6">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
-          <div className="flex items-center gap-2 px-4 py-2.5 bg-amber-50 border border-amber-200 rounded-lg">
+          <div className="flex items-center gap-2 px-4 py-2.5 bg-[#FAF0DB] border border-[#861710] rounded-lg">
             <span className="text-base">✨</span>
-            <span className="text-xs font-medium text-stone-700">Golden Haldi theme — no signup required</span>
+            <span className="text-xs font-medium text-[#6C0000]">Golden Haldi theme — no signup required</span>
           </div>
-          <div className="flex items-center gap-2 px-4 py-2.5 bg-amber-50 border border-amber-200 rounded-lg">
+          <div className="flex items-center gap-2 px-4 py-2.5 bg-[#FAF0DB] border border-[#861710] rounded-lg">
             <span className="text-base">🛡️</span>
-            <span className="text-xs font-medium text-stone-700">No ads, no coins, no subscriptions — one time $2.99</span>
+            <span className="text-xs font-medium text-[#6C0000]">No ads, no coins, no subscriptions — one time $2.99</span>
           </div>
-          <div className="flex items-center gap-2 px-4 py-2.5 bg-amber-50 border border-amber-200 rounded-lg">
+          <div className="flex items-center gap-2 px-4 py-2.5 bg-[#FAF0DB] border border-[#861710] rounded-lg">
             <span className="text-base">💻</span>
-            <span className="text-xs font-medium text-stone-700">Works in your browser — no app to download</span>
+            <span className="text-xs font-medium text-[#6C0000]">Works in your browser — no app to download</span>
           </div>
         </div>
       </div>
@@ -181,32 +181,32 @@ export default function HaldiInvitationCard() {
         {/* Sidebar */}
         <aside className="space-y-6">
           {/* Feature bar */}
-          <div className="rounded-xl border border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 p-4 space-y-2">
+          <div className="rounded-xl border border-[#861710] bg-[#FAF0DB] p-4 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-sm">✨</span>
-              <span className="text-xs font-medium text-stone-700">Golden Haldi theme — no signup required</span>
+              <span className="text-xs font-medium text-[#6C0000]">Golden Haldi theme — no signup required</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm">🛡️</span>
-              <span className="text-xs font-medium text-stone-700">No ads, no coins, no subscriptions — one time $2.99</span>
+              <span className="text-xs font-medium text-[#6C0000]">No ads, no coins, no subscriptions — one time $2.99</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm">💻</span>
-              <span className="text-xs font-medium text-stone-700">Works in your browser — no app to download</span>
+              <span className="text-xs font-medium text-[#6C0000]">Works in your browser — no app to download</span>
             </div>
           </div>
 
           <div>
-            <p className="text-xs font-bold tracking-widest text-amber-500 mb-1">HALDI INVITATION CARD MAKER</p>
-            <h1 className="text-xl font-bold text-stone-900 mb-2">Free Haldi Ceremony Invitation Card — No Signup</h1>
-            <p className="text-sm text-stone-600 leading-relaxed">
+            <p className="text-xs font-bold tracking-widest text-[#E69C3B] mb-1">HALDI INVITATION CARD MAKER</p>
+            <h1 className="text-xl font-bold text-[#6C0000] mb-2">Free Haldi Ceremony Invitation Card — No Signup</h1>
+            <p className="text-sm text-[#6C0000] leading-relaxed">
               Create beautiful golden haldi ceremony invitation cards in seconds. Choose an Indian wedding style, add your names and venue, download instantly.
             </p>
           </div>
 
           {/* Style picker */}
           <section>
-            <h2 className="text-xs font-bold tracking-widest text-stone-400 mb-3">CHOOSE YOUR STYLE</h2>
+            <h2 className="text-xs font-bold tracking-widest text-[#861710] mb-3">CHOOSE YOUR STYLE</h2>
             <div className="space-y-2">
               {WEDDING_STYLES.map((style) => (
                 <button
@@ -214,8 +214,8 @@ export default function HaldiInvitationCard() {
                   onClick={() => setStyleId(style.id)}
                   className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all text-left ${
                     styleId === style.id
-                      ? "border-amber-500 bg-amber-50"
-                      : "border-stone-200 bg-white hover:border-amber-300"
+                      ? "border-[#861710] bg-[#FAF0DB]"
+                      : "border-[#861710] bg-[#FAF0DB] hover:border-[#E69C3B]"
                   }`}
                 >
                   <span
@@ -223,8 +223,8 @@ export default function HaldiInvitationCard() {
                     style={{ background: style.gradient }}
                   />
                   <span className="min-w-0">
-                    <strong className="block text-sm font-semibold text-stone-900">{style.name}</strong>
-                    <small className="block text-xs text-stone-500 truncate">{style.description}</small>
+                    <strong className="block text-sm font-semibold text-[#6C0000]">{style.name}</strong>
+                    <small className="block text-xs text-[#6C0000] truncate">{style.description}</small>
                   </span>
                 </button>
               ))}
@@ -233,56 +233,56 @@ export default function HaldiInvitationCard() {
 
           {/* Personalize */}
           <section>
-            <h2 className="text-xs font-bold tracking-widest text-stone-400 mb-3">PERSONALIZE</h2>
+            <h2 className="text-xs font-bold tracking-widest text-[#861710] mb-3">PERSONALIZE</h2>
             <div className="space-y-3">
               <label className="block">
-                <span className="text-xs font-medium text-stone-600 mb-1 block">Bride / Groom Name</span>
+                <span className="text-xs font-medium text-[#6C0000] mb-1 block">Bride / Groom Name</span>
                 <input
                   type="text"
                   value={partner1}
                   onChange={(e) => setPartner1(e.target.value)}
                   maxLength={30}
-                  className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm focus:outline-none focus:border-amber-500"
+                  className="w-full px-3 py-2 border border-[#861710] rounded-lg text-sm focus:outline-none focus:border-[#E69C3B] bg-[#FAF0DB]"
                 />
               </label>
               <label className="block">
-                <span className="text-xs font-medium text-stone-600 mb-1 block">Partner Name</span>
+                <span className="text-xs font-medium text-[#6C0000] mb-1 block">Partner Name</span>
                 <input
                   type="text"
                   value={partner2}
                   onChange={(e) => setPartner2(e.target.value)}
                   maxLength={30}
-                  className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm focus:outline-none focus:border-amber-500"
+                  className="w-full px-3 py-2 border border-[#861710] rounded-lg text-sm focus:outline-none focus:border-[#E69C3B] bg-[#FAF0DB]"
                 />
               </label>
               <label className="block">
-                <span className="text-xs font-medium text-stone-600 mb-1 block">Haldi Ceremony Date</span>
+                <span className="text-xs font-medium text-[#6C0000] mb-1 block">Haldi Ceremony Date</span>
                 <input
                   type="text"
                   value={dateText}
                   onChange={(e) => setDateText(e.target.value)}
                   maxLength={40}
-                  className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm focus:outline-none focus:border-amber-500"
+                  className="w-full px-3 py-2 border border-[#861710] rounded-lg text-sm focus:outline-none focus:border-[#E69C3B] bg-[#FAF0DB]"
                 />
               </label>
               <label className="block">
-                <span className="text-xs font-medium text-stone-600 mb-1 block">Venue</span>
+                <span className="text-xs font-medium text-[#6C0000] mb-1 block">Venue</span>
                 <input
                   type="text"
                   value={venue}
                   onChange={(e) => setVenue(e.target.value)}
                   maxLength={60}
-                  className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm focus:outline-none focus:border-amber-500"
+                  className="w-full px-3 py-2 border border-[#861710] rounded-lg text-sm focus:outline-none focus:border-[#E69C3B] bg-[#FAF0DB]"
                 />
               </label>
               <label className="block">
-                <span className="text-xs font-medium text-stone-600 mb-1 block">Short Message (optional)</span>
+                <span className="text-xs font-medium text-[#6C0000] mb-1 block">Short Message (optional)</span>
                 <input
                   type="text"
                   value={greeting}
                   onChange={(e) => setGreeting(e.target.value)}
                   maxLength={72}
-                  className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm focus:outline-none focus:border-amber-500"
+                  className="w-full px-3 py-2 border border-[#861710] rounded-lg text-sm focus:outline-none focus:border-[#E69C3B] bg-[#FAF0DB]"
                   placeholder="Haldi Ceremony"
                 />
               </label>
@@ -294,7 +294,7 @@ export default function HaldiInvitationCard() {
             <button
               onClick={triggerPreview}
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-lg shadow-lg hover:from-amber-600 hover:to-orange-600 disabled:opacity-50 transition-all"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#E69C3B] text-white font-semibold rounded-lg shadow-lg hover:bg-[#EA812E] disabled:opacity-50 transition-all"
             >
               {isLoading ? (
                 <RefreshCw className="w-4 h-4 animate-spin" />
@@ -303,25 +303,25 @@ export default function HaldiInvitationCard() {
               )}
               Generate Free Preview
             </button>
-            <p className="text-xs text-stone-500 text-center px-2 leading-relaxed">
+            <p className="text-xs text-[#6C0000] text-center px-2 leading-relaxed">
               Generate your free preview, then upgrade to HD print-ready for $2.99.
             </p>
             <button
               disabled
-              className="w-full px-4 py-3 border-2 border-dashed border-stone-300 text-stone-400 font-medium rounded-lg cursor-not-allowed"
+              className="w-full px-4 py-3 border-2 border-dashed border-[#861710] text-[#6C0000] font-medium rounded-lg cursor-not-allowed"
             >
               AI Enhance - 2K Print Ready - Coming soon
             </button>
           </section>
 
           {/* Waitlist banner */}
-          <section className="p-4 bg-amber-50 border border-amber-200 rounded-lg text-center">
-            <p className="text-sm font-medium text-amber-900 mb-3">
+          <section className="p-4 bg-[#FAF0DB] border border-[#861710] rounded-lg text-center">
+            <p className="text-sm font-medium text-[#6C0000] mb-3">
               Want HD print-ready haldi cards? Join the waitlist — we&apos;ll notify you first.
             </p>
             <button
               onClick={() => setShowWaitlist(true)}
-              className="px-6 py-2 bg-amber-600 text-white text-sm font-semibold rounded-lg hover:bg-amber-700 transition-colors"
+              className="px-6 py-2 bg-[#E69C3B] text-white text-sm font-semibold rounded-lg hover:bg-[#EA812E] transition-colors"
             >
               Join Waitlist
             </button>
@@ -341,28 +341,28 @@ export default function HaldiInvitationCard() {
                 <button
                   onClick={triggerPreview}
                   disabled={isLoading}
-                  className="flex items-center gap-2 px-4 py-2 bg-white border border-stone-200 rounded-lg text-sm font-medium hover:bg-stone-50 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-[#FAF0DB] border border-[#861710] text-[#6C0000] rounded-lg text-sm font-medium hover:bg-[#861710] hover:text-white transition-colors"
                 >
                   <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
                   Refresh
                 </button>
                 <button
                   onClick={downloadImage}
-                  className="flex items-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-semibold hover:bg-amber-700 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-[#E69C3B] text-white rounded-lg text-sm font-semibold hover:bg-[#EA812E] transition-colors"
                 >
                   <Download className="w-4 h-4" />
                   Download
                 </button>
                 <button
                   onClick={openPayment}
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-600 to-amber-600 text-white rounded-lg text-sm font-bold hover:from-orange-700 hover:to-amber-700 transition-colors shadow-md"
+                  className="flex items-center gap-2 px-4 py-2 bg-[#861710] text-white rounded-lg text-sm font-bold hover:bg-[#6C0000] transition-colors shadow-md"
                 >
                   ✨ Buy HD — $2.99
                 </button>
               </div>
             </>
           ) : (
-            <div className="w-full max-w-md aspect-[5/7] rounded-2xl bg-white border-2 border-dashed border-amber-300 flex items-center justify-center text-stone-400">
+            <div className="w-full max-w-md aspect-[5/7] rounded-2xl bg-[#FAF0DB] border-2 border-dashed border-[#861710] flex items-center justify-center text-[#6C0000]">
               <p className="text-center px-8">
                 Pick a style, personalize your details, and click <strong>Generate Free Preview</strong> to see your haldi invitation card.
               </p>
@@ -373,13 +373,13 @@ export default function HaldiInvitationCard() {
 
       {/* Haldi Studio cross-link */}
       <section className="max-w-4xl mx-auto px-4 py-8">
-        <div className="p-6 bg-gradient-to-r from-yellow-100 to-amber-100 rounded-2xl text-center border border-yellow-200">
-          <p className="text-amber-900 font-medium mb-3">
+        <div className="p-6 bg-[#FAF0DB] rounded-2xl text-center border border-[#861710]">
+          <p className="text-[#6C0000] font-medium mb-3">
             Want more Haldi design options? Try our full Haldi Studio with turmeric, marigold, and mandala styles.
           </p>
           <a
             href="/haldi-ceremony-invitation"
-            className="inline-block px-6 py-3 bg-amber-600 text-white font-bold rounded-xl shadow-md hover:bg-amber-700 transition-colors"
+            className="inline-block px-6 py-3 bg-[#E69C3B] text-white font-bold rounded-xl shadow-md hover:bg-[#EA812E] transition-colors"
           >
             Open Haldi Studio →
           </a>
@@ -388,13 +388,13 @@ export default function HaldiInvitationCard() {
 
       {/* CTA banner */}
       <section className="max-w-4xl mx-auto px-4 py-8">
-        <div className="p-6 bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl text-center shadow-lg">
+        <div className="p-6 bg-[#861710] rounded-2xl text-center shadow-lg">
           <p className="text-white font-medium mb-3">
             Also need Diwali marketing posters for your business?
           </p>
           <Link
             href="/"
-            className="inline-block px-6 py-3 bg-white text-orange-700 font-bold rounded-xl shadow-md hover:bg-orange-50 transition-colors"
+            className="inline-block px-6 py-3 bg-[#E69C3B] text-white font-bold rounded-xl shadow-md hover:bg-[#EA812E] transition-colors"
           >
             Create Diwali Posts Free →
           </Link>
