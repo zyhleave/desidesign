@@ -47,7 +47,7 @@ export default function PaymentModal({ styleId, styleName, previewDataUrl, onClo
     if (!document.getElementById(scriptId)) {
       const script = document.createElement("script");
       script.id = scriptId;
-      script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD&intent=capture`;
+      script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD&intent=capture&locale=en_US`;
       script.onload = () => renderButtons(container, clientId);
       document.head.appendChild(script);
     } else {

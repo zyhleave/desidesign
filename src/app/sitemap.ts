@@ -10,6 +10,7 @@ const LIVE_SLUGS = [
   "wedding-invitation-wording",
   "haldi-ceremony-invitation",
   "haldi-invitation-card",
+  "sangeet-invitation-card",
 ];
 
 /**
