@@ -366,6 +366,10 @@ export default function Home() {
             <strong>Haldi Ceremony Invitation</strong>
             <span>Free Haldi ceremony invitation cards — download, print & share instantly</span>
           </a>
+          <a className="tool-card" href="/sangeet-invitation-card">
+            <strong>Sangeet Invitation Card</strong>
+            <span>Free golden Sangeet ceremony invitation cards — no signup needed</span>
+          </a>
         </div>
       </section>
       {showLoginModal && <LoginModal onClose={() => setShowLoginModal(false)} onSuccess={() => setNotice("Logged in! You can now download.")} />}

@@ -37,12 +37,15 @@ const PLANNED_SLUGS = [
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = "https://desidesign.me";
+  // Always use today so Google sees fresh content
   const now = new Date();
+  const todayStr = now.toISOString().split("T")[0];
+  const lastMod = new Date(todayStr + "T08:00:00.000Z");
   return [
-    { url: `${base}/`, lastModified: now, changeFrequency: "daily", priority: 1.0 },
+    { url: `${base}/`, lastModified: lastMod, changeFrequency: "daily", priority: 1.0 },
     ...LIVE_SLUGS.map((slug) => ({
       url: `${base}/${slug}`,
-      lastModified: now,
+      lastModified: lastMod,
       changeFrequency: "weekly" as const,
       priority: 0.8,
     })),
